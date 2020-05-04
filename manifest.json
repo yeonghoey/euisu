@@ -2,5 +2,20 @@
     "name": "Euisu",
     "version": "1.0",
     "description": "Yeongho's custom features",
+    "permissions": [
+        "activeTab",
+        "clipboardWrite"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://en.dict.naver.com/*"
+            ],
+            "run_at": "document_idle",
+            "js": [
+                "naverEnDict.js"
+            ]
+        }
+    ],
     "manifest_version": 2
 }
