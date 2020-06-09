@@ -35,14 +35,13 @@ func (anki *Anki) Save(target string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	hash := calcHash(body)
-	filename := fmt.Sprintf("%s.%s", hash, ext)
-	filepath := filepath.Join(anki.ankiMedia, filename)
-	if err := saveBodyAs(body, filepath); err != nil {
+	basename := fmt.Sprintf("%s%s", hash, ext)
+	filename := filepath.Join(anki.ankiMedia, basename)
+	if err := saveBodyAs(filename, body); err != nil {
 		return "", err
 	}
-	return filepath, nil
+	return filename, nil
 }
 
 func getBody(target string) (body []byte, ext string, err error) {
@@ -68,19 +67,6 @@ func calcHash(body []byte) string {
 	return fmt.Sprintf("%x", sha1.Sum(body))
 }
 
-func saveBodyAs(body []byte, path string) error {
-	f, err := os.Create(path)
-	if err != nil {
-		return fmt.Errorf("Failed to create %q: %w", path, err)
-	}
-	defer f.Close()
-	n, err := f.Write(body)
-	if err != nil {
-		return fmt.Errorf("Failed to write the body as %q, written %d: %w", path, n, err)
-	}
-	err = f.Sync()
-	if err != nil {
-		return fmt.Errorf("Sync of %q failed: %w", path, err)
-	}
-	return nil
+func saveBodyAs(filename string, body []byte) error {
+	return ioutil.WriteFile(filename, body, 0644)
 }
