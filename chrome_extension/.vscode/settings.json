@@ -3,6 +3,6 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
-    "editor.autoIndent": "keep",
+    "editor.autoIndent": "brackets",
     "editor.tabSize": 2
 }
