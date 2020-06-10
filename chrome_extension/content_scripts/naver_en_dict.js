@@ -120,13 +120,18 @@ function injectMeaningBlockCopyButton() {
 }
 
 /**
- * NOTE: Injects the actual features after the page is fully loaded.
- * The search result page of 'en.dict.naver.com' seems to
- * do some internal redirection which makes the actual contents unavailable unless
- * it's fully loaded.
+ * NOTE: 'en.dict.naver.com' loads the page dynamically.
+ * Just keep monitoring the page and injects the actual features
+ * when the searchPage_entry element is fully loaded.
  */
-document.onreadystatechange = function onreadystatechange() {
-  if (document.readyState === 'complete') {
-    injectMeaningBlockCopyButton();
+setInterval(() => {
+  const el = document.getElementById('searchPage_entry');
+  if (el === null) {
+    return;
   }
-};
+  if (el.dataset.euisuInjected) {
+    return;
+  }
+  injectMeaningBlockCopyButton();
+  el.dataset.euisuInjected = true;
+}, 500);
