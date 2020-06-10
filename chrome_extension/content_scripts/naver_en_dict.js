@@ -1,7 +1,7 @@
 /**
- * Injects a button on each row of component_keyword section 
+ * Injects a button on each row of component_keyword section
  * in the search result page of en.dict.naver.com.
- * 
+ *
  * The keyword section of the search result page is constructed like:
  * <div class="component_keyword">
  *  <div class="row">
@@ -12,84 +12,75 @@
  *  </div>
  *  ...
  * </div>
- * 
- * This featue puts together a string for each row 
+ *
+ * This featue puts together a string for each row
  * which contains all of the text in `mean_list` and make it available through
  * injecting a button which copy this string into clipboard
  */
-function injectMeaningBlockCopyButton() {
-    let keywordSections = Array.from(
-        document.getElementsByClassName("component_keyword")
-    );
-    keywordSections.forEach((section) => {
-        processSection(section);
-    });
+
+function appendCopyButtonToOrigins(row, copyButton) {
+  const origins = [...row.getElementsByClassName('origin')];
+  origins.forEach((origin) => {
+    origin.appendChild(copyButton);
+  });
 }
 
-function processSection(section) {
-    let rows = Array.from(
-        section.getElementsByClassName("row")
-    );
-    rows.forEach((row) => {
-        processRow(row);
-    })
-}
-
-function processRow(row) {
-    let meaningBlock = collateMeaningBlock(row);
-    let copyButton = makeCopyButton(meaningBlock);
-    appendCopyButtonToOrigins(row, copyButton);
-}
-
-function collateMeaningBlock(row) {
-    let meanLists = Array.from(
-        row.getElementsByClassName("mean_list")
-    );
-    let meanings = meanLists.map((meanList) => {
-        return convertMeanListToMeanings(meanList);
-    })
-    let meaningBlock = meanings.join("\n");
-    return meaningBlock;
-}
-
-function convertMeanListToMeanings(meanList) {
-    let meanItems = Array.from(
-        meanList.getElementsByClassName("mean_item")
-    );
-    let meaningLines = meanItems.map((meanItem) => {
-        return convertMeanItemToMeanLine(meanItem);
-    })
-
-    let meaning = meaningLines.join("\n");
-    return meaning;
+function makeCopyButton(targetWord, meaningBlock) {
+  const button = document.createElement('button');
+  // TODO: make the appearance fancier
+  button.innerText = 'Copy';
+  button.onclick = function onclick() {
+    navigator.clipboard.writeText(meaningBlock);
+  };
+  return button;
 }
 
 function convertMeanItemToMeanLine(meanItem) {
-    let children = Array.from(meanItem.children);
-    let columns = children.map((el) => {
-        return el.innerText.trim()
-    })
-    let meanLine = columns.join(" ");
-    return meanLine;
+  const children = [...meanItem.children];
+  const columns = children.map((el) => el.innerText.trim());
+  const meanLine = columns.join(' ');
+  return meanLine;
 }
 
-function makeCopyButton(meaningBlock) {
-    let button = document.createElement("button");
-    // TODO: make the appearance fancier
-    button.innerText = "Copy";
-    button.onclick = function () {
-        navigator.clipboard.writeText(meaningBlock);
-    }
-    return button
+function convertMeanListToMeanings(meanList) {
+  const meanItems = [...meanList.getElementsByClassName('mean_item')];
+  const meaningLines = meanItems.map((meanItem) => convertMeanItemToMeanLine(meanItem));
+
+  const meaning = meaningLines.join('\n');
+  return meaning;
 }
 
-function appendCopyButtonToOrigins(row, copyButton) {
-    let origins = Array.from(
-        row.getElementsByClassName("origin")
-    );
-    origins.forEach((origin) => {
-        origin.appendChild(copyButton);
-    })
+function collateMeaningBlock(row) {
+  const meanLists = [...row.getElementsByClassName('mean_list')];
+  const meanings = meanLists.map((meanList) => convertMeanListToMeanings(meanList));
+  const meaningBlock = meanings.join('\n');
+  return meaningBlock;
+}
+
+function extractTargetWord(row) {
+  const el = row.querySelector('.origin > :first-child');
+  return el;
+}
+
+function processRow(row) {
+  const targetWord = extractTargetWord(row);
+  const meaningBlock = collateMeaningBlock(row);
+  const copyButton = makeCopyButton(targetWord, meaningBlock);
+  appendCopyButtonToOrigins(row, copyButton);
+}
+
+function processSection(section) {
+  const rows = [...section.getElementsByClassName('row')];
+  rows.forEach((row) => {
+    processRow(row);
+  });
+}
+
+function injectMeaningBlockCopyButton() {
+  const keywordSections = [...document.getElementsByClassName('component_keyword')];
+  keywordSections.forEach((section) => {
+    processSection(section);
+  });
 }
 
 /**
@@ -98,8 +89,8 @@ function appendCopyButtonToOrigins(row, copyButton) {
  * do some internal redirection which makes the actual contents unavailable unless
  * it's fully loaded.
  */
-document.onreadystatechange = function () {
-    if (document.readyState === 'complete') {
-        injectMeaningBlockCopyButton();
-    }
-}
+document.onreadystatechange = function onreadystatechange() {
+  if (document.readyState === 'complete') {
+    injectMeaningBlockCopyButton();
+  }
+};
