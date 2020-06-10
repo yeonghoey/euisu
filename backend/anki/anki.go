@@ -29,7 +29,8 @@ func NewAnki(ankiMedia string) (*Anki, error) {
 	return anki, nil
 }
 
-// Save saves the body of target URL as "<ankiMedia>/<sha1hash>.<ext>""
+// Save saves the body of target URL as <ankiMedia>/<sha1hash>.<ext>.
+// This returns only the basename of the file, <sha1hash>.<ext>.
 func (anki *Anki) Save(target string) (string, error) {
 	body, ext, err := getBody(target)
 	if err != nil {
@@ -41,7 +42,7 @@ func (anki *Anki) Save(target string) (string, error) {
 	if err := saveBodyAs(filename, body); err != nil {
 		return "", err
 	}
-	return filename, nil
+	return basename, nil
 }
 
 func getBody(target string) (body []byte, ext string, err error) {

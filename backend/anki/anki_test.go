@@ -5,8 +5,11 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"testing"
 )
+
+const testMP3 = "testdata/test.mp3"
 
 func TestNewAnkiFailsIfNotExist(t *testing.T) {
 	path := "/path/not/exist"
@@ -31,18 +34,7 @@ func TestNewAnkiFailsIfNotDir(t *testing.T) {
 }
 
 func TestAnkiSave(t *testing.T) {
-	const testMP3 = "testdata/test.mp3"
-
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "audio/mpeg")
-		mp3, err := ioutil.ReadFile(testMP3)
-		if err != nil {
-			t.Error(err)
-		}
-		if _, err := w.Write(mp3); err != nil {
-			t.Error(err)
-		}
-	}))
+	ts := newTestMP3Server(t)
 	defer ts.Close()
 
 	ankiMedia, err := ioutil.TempDir("", "")
@@ -55,7 +47,7 @@ func TestAnkiSave(t *testing.T) {
 		t.Error(err)
 	}
 
-	path, err := anki.Save(ts.URL)
+	basename, err := anki.Save(ts.URL)
 	if err != nil {
 		t.Error(err)
 	}
@@ -64,7 +56,9 @@ func TestAnkiSave(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	copy, err := ioutil.ReadFile(path)
+
+	filename := filepath.Join(ankiMedia, basename)
+	copy, err := ioutil.ReadFile(filename)
 	if err != nil {
 		t.Error(err)
 	}
@@ -74,4 +68,17 @@ func TestAnkiSave(t *testing.T) {
 	if origHash != copyHash {
 		t.Errorf("The hashes of the original file(%q) and downloaded file(%q) don't match", origHash, copyHash)
 	}
+}
+
+func newTestMP3Server(t *testing.T) *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "audio/mpeg")
+		mp3, err := ioutil.ReadFile(testMP3)
+		if err != nil {
+			t.Error(err)
+		}
+		if _, err := w.Write(mp3); err != nil {
+			t.Error(err)
+		}
+	}))
 }
