@@ -25,13 +25,38 @@ function appendCopyButtonToOrigins(row, copyButton) {
   });
 }
 
-function makeCopyButton(targetWord, meaningBlock) {
-  const content = `${targetWord}\n${meaningBlock}`;
+async function requestAnkiSave(target) {
+  // TODO: Make this configurable.
+  const url = 'http://localhost:8732/anki';
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      target,
+    }),
+  });
+  const json = await response.json();
+  return json.basename;
+}
+
+function makeCopyButton(targetWord, playButton, meaningBlock) {
   const button = document.createElement('button');
   // TODO: make the appearance fancier
   button.innerText = 'Copy';
   button.onclick = function onclick() {
-    navigator.clipboard.writeText(content);
+    if (playButton === null) {
+      const content = `${targetWord}\n${meaningBlock}`;
+      navigator.clipboard.writeText(content);
+    } else {
+      const target = playButton.getAttribute('purl');
+      requestAnkiSave(target).then((basename) => {
+        const content = `${targetWord} [sound:${basename}]\n${meaningBlock}`;
+        navigator.clipboard.writeText(content);
+        playButton.click();
+      });
+    }
   };
   return button;
 }
@@ -58,6 +83,15 @@ function collateMeaningBlock(row) {
   return meaningBlock;
 }
 
+function extractFirstPlayButton(row) {
+  return row.querySelector('.origin > .listen_list > :first-child button.btn_listen.play');
+
+  //   if (firstPlayButton === null) {
+  //   return '';
+  // }
+  // return firstPlayButton.getAttribute('purl');
+}
+
 function extractTargetWord(row) {
   const el = row.querySelector('.origin > :first-child');
   return el.innerText.trim();
@@ -65,8 +99,9 @@ function extractTargetWord(row) {
 
 function processRow(row) {
   const targetWord = extractTargetWord(row);
+  const playButton = extractFirstPlayButton(row);
   const meaningBlock = collateMeaningBlock(row);
-  const copyButton = makeCopyButton(targetWord, meaningBlock);
+  const copyButton = makeCopyButton(targetWord, playButton, meaningBlock);
   appendCopyButtonToOrigins(row, copyButton);
 }
 
