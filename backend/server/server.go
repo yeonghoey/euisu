@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/rs/cors"
 	"github.com/yeonghoey/euisu/backend/anki"
 )
 
@@ -15,10 +16,14 @@ type Server struct {
 
 // Run runs a HTTP Server using DefaultServeMux.
 func (s *Server) Run() {
-	s.registerHandlers()
-	log.Fatal(http.ListenAndServe(s.Addr, nil))
+	mux := s.buildMux()
+	// Allow all
+	handler := cors.Default().Handler(mux)
+	log.Fatal(http.ListenAndServe(s.Addr, handler))
 }
 
-func (s *Server) registerHandlers() {
-	http.Handle("/anki/", newAnkiHandler(s.Anki))
+func (s *Server) buildMux() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.Handle("/anki", newAnkiHandler(s.Anki))
+	return mux
 }
