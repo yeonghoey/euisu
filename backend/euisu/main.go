@@ -2,11 +2,21 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log"
+
+	"github.com/yeonghoey/euisu/backend/anki"
+	"github.com/yeonghoey/euisu/backend/server"
 )
 
 func main() {
 	flag.Parse()
-	fmt.Printf("ServAddr: %q\n", servAddr)
-	fmt.Printf("AnkiMedia: %q\n", ankiMedia)
+	anki, err := anki.NewAnki(ankiMedia)
+	if err != nil {
+		log.Fatalf("Failed to initialize Anki with %q", ankiMedia)
+	}
+	s := &server.Server{
+		Addr: servAddr,
+		Anki: anki,
+	}
+	s.Run()
 }

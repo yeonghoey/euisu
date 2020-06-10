@@ -13,13 +13,13 @@ func init() {
 		&servAddr,
 		"servaddr",
 		":8732",
-		`Addr for http.Server. Default is ":8732"`,
+		`Addr for http.Server`,
 	)
 
 	flag.StringVar(
 		&ankiMedia,
 		"ankimedia",
 		os.Getenv("ANKI_MEDIA"),
-		`Path to Anki Media folder. Default is the value of ANKI_MEDIA envvar`,
+		`Path to Anki Media folder`,
 	)
 }
