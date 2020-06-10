@@ -26,11 +26,12 @@ function appendCopyButtonToOrigins(row, copyButton) {
 }
 
 function makeCopyButton(targetWord, meaningBlock) {
+  const content = `${targetWord}\n${meaningBlock}`;
   const button = document.createElement('button');
   // TODO: make the appearance fancier
   button.innerText = 'Copy';
   button.onclick = function onclick() {
-    navigator.clipboard.writeText(meaningBlock);
+    navigator.clipboard.writeText(content);
   };
   return button;
 }
@@ -59,7 +60,7 @@ function collateMeaningBlock(row) {
 
 function extractTargetWord(row) {
   const el = row.querySelector('.origin > :first-child');
-  return el;
+  return el.innerText.trim();
 }
 
 function processRow(row) {
