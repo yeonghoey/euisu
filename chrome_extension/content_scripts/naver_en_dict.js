@@ -36,23 +36,6 @@ function makeImageButton(targetText) {
   return button;
 }
 
-async function requestAnki(typ, target) {
-  // TODO: Make this configurable.
-  const url = 'http://localhost:8732/anki';
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      type: typ,
-      target,
-    }),
-  });
-  const json = await response.json();
-  return json.basename;
-}
-
 function makeScrapButton(targetText, playButton, meaningBlock) {
   const button = document.createElement('button');
   // TODO: make the appearance fancier
@@ -67,7 +50,7 @@ function makeScrapButton(targetText, playButton, meaningBlock) {
       typ = 'tts';
       target = targetText;
     }
-    requestAnki(typ, target).then((basename) => {
+    chrome.runtime.sendMessage({ type: 'requestAnki', typ, target }, (basename) => {
       const content = `${targetText} [sound:${basename}]\n${meaningBlock}`;
       navigator.clipboard.writeText(content);
     });
