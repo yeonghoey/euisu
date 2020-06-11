@@ -31,7 +31,7 @@ func newAnkiHandler(anki *anki.Anki) http.Handler {
 			http.Error(w, "\"target\" is required", http.StatusBadRequest)
 			return
 		}
-		basename, err := anki.Save(target)
+		basename, err := anki.Download(target)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

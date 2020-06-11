@@ -33,7 +33,7 @@ func TestNewAnkiFailsIfNotDir(t *testing.T) {
 	}
 }
 
-func TestAnkiSave(t *testing.T) {
+func TestAnkiDonwload(t *testing.T) {
 	ts := newTestMP3Server(t)
 	defer ts.Close()
 
@@ -47,7 +47,7 @@ func TestAnkiSave(t *testing.T) {
 		t.Error(err)
 	}
 
-	basename, err := anki.Save(ts.URL)
+	basename, err := anki.Download(ts.URL)
 	if err != nil {
 		t.Error(err)
 	}
@@ -67,6 +67,36 @@ func TestAnkiSave(t *testing.T) {
 	copyHash := calcHash(copy)
 	if origHash != copyHash {
 		t.Errorf("The hashes of the original file(%q) and downloaded file(%q) don't match", origHash, copyHash)
+	}
+}
+
+func TestAnkiTTS(t *testing.T) {
+	ankiMedia, err := ioutil.TempDir("", "")
+	log.Println(ankiMedia)
+	if err != nil {
+		t.Error(err)
+	}
+	anki, err := NewAnki(ankiMedia)
+	if err != nil {
+		t.Error(err)
+	}
+
+	basename, err := anki.TTS("test")
+	if err != nil {
+		t.Error(err)
+	}
+
+	filename := filepath.Join(ankiMedia, basename)
+	saved, err := ioutil.ReadFile(filename)
+	if err != nil {
+		t.Error(err)
+	}
+	hash := calcHash(saved)
+
+	// Text: "test", Voice: "en-US-Wavenet-D"
+	const testHash = "6f7bb3da0ee15908bd73a8c11fdc57d80a071437"
+	if hash != testHash {
+		t.Errorf("The saved audio hash(%q) doesn't match the precalculated audio hash(%q)", hash, testHash)
 	}
 }
 

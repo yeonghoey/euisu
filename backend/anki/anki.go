@@ -1,6 +1,7 @@
 package anki
 
 import (
+	"context"
 	"crypto/sha1"
 	"fmt"
 	"io/ioutil"
@@ -10,6 +11,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
+	texttospeech "cloud.google.com/go/texttospeech/apiv1"
+	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
 )
 
 // Anki is for handling Anki related features.
@@ -32,24 +36,17 @@ func NewAnki(ankiMedia string) (*Anki, error) {
 	return anki, nil
 }
 
-// Save saves the body of target URL as <ankiMedia>/<sha1hash>.<ext>.
+// Download get the content of target URL and save it as <ankiMedia>/<sha1hash>.<ext>.
 // This returns only the basename of the file, <sha1hash>.<ext>.
-func (anki *Anki) Save(target string) (string, error) {
-	body, ext, err := getBody(target)
+func (anki *Anki) Download(target string) (string, error) {
+	content, ext, err := getContent(target)
 	if err != nil {
 		return "", err
 	}
-	hash := calcHash(body)
-	basename := fmt.Sprintf("%s%s", hash, ext)
-	filename := filepath.Join(anki.ankiMedia, basename)
-	if err := saveBodyAs(filename, body); err != nil {
-		return "", err
-	}
-	listen(filename)
-	return basename, nil
+	return anki.saveAndListen(content, ext)
 }
 
-func getBody(target string) (body []byte, ext string, err error) {
+func getContent(target string) (content []byte, ext string, err error) {
 	resp, err := http.Get(target)
 	if err != nil {
 		err = fmt.Errorf("GET %v failed: %w", target, err)
@@ -64,16 +61,55 @@ func getBody(target string) (body []byte, ext string, err error) {
 	default:
 		err = fmt.Errorf("Unsupported Content-Type %q", contentType)
 	}
-	body, err = ioutil.ReadAll(resp.Body)
+	content, err = ioutil.ReadAll(resp.Body)
 	return
 }
 
-func calcHash(body []byte) string {
-	return fmt.Sprintf("%x", sha1.Sum(body))
+// TTS generates an audio file from test using Google Cloud Text-to-Speech API.
+func (anki *Anki) TTS(text string) (string, error) {
+	ctx := context.Background()
+
+	client, err := texttospeech.NewClient(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	req := texttospeechpb.SynthesizeSpeechRequest{
+		Input: &texttospeechpb.SynthesisInput{
+			InputSource: &texttospeechpb.SynthesisInput_Text{Text: text},
+		},
+		Voice: &texttospeechpb.VoiceSelectionParams{
+			LanguageCode: "en-US",
+			Name:         "en-US-Wavenet-D",
+		},
+		AudioConfig: &texttospeechpb.AudioConfig{
+			AudioEncoding: texttospeechpb.AudioEncoding_MP3,
+		},
+	}
+	resp, err := client.SynthesizeSpeech(ctx, &req)
+	if err != nil {
+		return "", err
+	}
+	return anki.saveAndListen(resp.AudioContent, ".mp3")
 }
 
-func saveBodyAs(filename string, body []byte) error {
-	return ioutil.WriteFile(filename, body, 0644)
+func (anki *Anki) saveAndListen(content []byte, ext string) (string, error) {
+	hash := calcHash(content)
+	basename := fmt.Sprintf("%s%s", hash, ext)
+	filename := filepath.Join(anki.ankiMedia, basename)
+	if err := saveAs(filename, content); err != nil {
+		return "", err
+	}
+	listen(filename)
+	return basename, nil
+}
+
+func calcHash(content []byte) string {
+	return fmt.Sprintf("%x", sha1.Sum(content))
+}
+
+func saveAs(filename string, content []byte) error {
+	return ioutil.WriteFile(filename, content, 0644)
 }
 
 func listen(filename string) {
