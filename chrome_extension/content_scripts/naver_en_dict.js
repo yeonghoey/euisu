@@ -17,12 +17,23 @@
  * which contains all of the text in `mean_list` and make it available through
  * injecting a button which copy this string into clipboard
  */
-
-function appendCopyButtonToOrigins(row, copyButton) {
+function appendEuisuContainerToOrigins(row, euisuContainer) {
   const origins = [...row.getElementsByClassName('origin')];
   origins.forEach((origin) => {
-    origin.appendChild(copyButton);
+    origin.appendChild(euisuContainer);
   });
+}
+
+function makeImageButton(targetWord) {
+  const button = document.createElement('button');
+  button.innerText = 'Image';
+  button.onclick = function onclick() {
+    chrome.runtime.sendMessage({
+      type: 'createTab',
+      url: `https://www.google.com/search?tbm=isch&q=${targetWord}`,
+    });
+  };
+  return button;
 }
 
 async function requestAnkiSave(target) {
@@ -59,6 +70,12 @@ function makeCopyButton(targetWord, playButton, meaningBlock) {
     }
   };
   return button;
+}
+
+function makeEuisuContainer() {
+  const div = document.createElement('div');
+  div.classList.add('euisu');
+  return div;
 }
 
 function convertMeanItemToMeanLine(meanItem) {
@@ -101,8 +118,15 @@ function processRow(row) {
   const targetWord = extractTargetWord(row);
   const playButton = extractFirstPlayButton(row);
   const meaningBlock = collateMeaningBlock(row);
-  const copyButton = makeCopyButton(targetWord, playButton, meaningBlock);
-  appendCopyButtonToOrigins(row, copyButton);
+
+  const euisuContainer = makeEuisuContainer();
+  euisuContainer.appendChild(
+    makeCopyButton(targetWord, playButton, meaningBlock),
+  );
+  euisuContainer.appendChild(
+    makeImageButton(targetWord),
+  );
+  appendEuisuContainerToOrigins(row, euisuContainer);
 }
 
 function processSection(section) {

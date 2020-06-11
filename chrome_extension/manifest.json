@@ -3,17 +3,21 @@
     "version": "0.0.1",
     "description": "Yeongho's custom features",
     "permissions": [
-        "clipboardWrite"
+        "clipboardWrite",
+        "tabs"
     ],
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
     "content_scripts": [
         {
             "matches": [
                 "*://en.dict.naver.com/*"
             ],
             "run_at": "document_idle",
-            "js": [
-                "content_scripts/naver_en_dict.js"
-            ]
+            "css": ["content_scripts/naver_en_dict.css"],
+            "js": ["content_scripts/naver_en_dict.js"]
         }
     ],
     "manifest_version": 2
