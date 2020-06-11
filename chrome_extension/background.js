@@ -38,7 +38,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
   if (info.menuItemId === 'euisu-scrap') {
     const text = info.selectionText.trim();
     requestAnki('tts', text).then((basename) => {
-      copyToClipboard(`${text}\n[sound:${basename}]`);
+      copyToClipboard(`${text} [sound:${basename}]`);
     });
   }
 });
