@@ -65,7 +65,6 @@ function makeScrapButton(targetWord, playButton, meaningBlock) {
       requestAnkiSave(target).then((basename) => {
         const content = `${targetWord} [sound:${basename}]\n${meaningBlock}`;
         navigator.clipboard.writeText(content);
-        playButton.click();
       });
     }
   };

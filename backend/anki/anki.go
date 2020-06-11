@@ -4,9 +4,12 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 )
 
 // Anki is for handling Anki related features.
@@ -42,6 +45,7 @@ func (anki *Anki) Save(target string) (string, error) {
 	if err := saveBodyAs(filename, body); err != nil {
 		return "", err
 	}
+	listen(filename)
 	return basename, nil
 }
 
@@ -70,4 +74,16 @@ func calcHash(body []byte) string {
 
 func saveBodyAs(filename string, body []byte) error {
 	return ioutil.WriteFile(filename, body, 0644)
+}
+
+func listen(filename string) {
+	var cmd *exec.Cmd
+	os := runtime.GOOS
+	switch os {
+	case "darwin":
+		cmd = exec.Command("afplay", filename)
+	default:
+		log.Fatalf("Unsupported OS: %s", os)
+	}
+	cmd.Run()
 }
