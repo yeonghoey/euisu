@@ -4,6 +4,7 @@
     "description": "Yeongho's custom features",
     "permissions": [
         "clipboardWrite",
+        "contextMenus",
         "tabs"
     ],
     "background": {
