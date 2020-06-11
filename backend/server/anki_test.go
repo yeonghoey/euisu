@@ -22,6 +22,7 @@ func TestAnki(t *testing.T) {
 	defer ankiServer.Close()
 
 	reqBody, err := json.Marshal(map[string]interface{}{
+		"type":   "download",
 		"target": targetServer.URL,
 	})
 	if err != nil {

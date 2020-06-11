@@ -2,6 +2,8 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/yeonghoey/euisu/backend/anki"
@@ -19,19 +21,23 @@ func newAnkiHandler(anki *anki.Anki) http.Handler {
 			return
 		}
 
-		var body map[string]interface{}
-		dec := json.NewDecoder(r.Body)
-		err := dec.Decode(&body)
+		typ, target, err := parseRequestBody(r.Body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		target, ok := body["target"].(string)
-		if !ok {
-			http.Error(w, "\"target\" is required", http.StatusBadRequest)
+
+		var basename string
+		switch typ {
+		case "download":
+			basename, err = anki.Download(target)
+		case "tts":
+			basename, err = anki.TTS(target)
+		default:
+			error := fmt.Sprintf("type should be \"download\" or \"tts\"; got %q", typ)
+			http.Error(w, error, http.StatusBadRequest)
 			return
 		}
-		basename, err := anki.Download(target)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -49,4 +55,27 @@ func newAnkiHandler(anki *anki.Anki) http.Handler {
 			return
 		}
 	})
+}
+
+func parseRequestBody(body io.Reader) (typ, target string, err error) {
+	dec := json.NewDecoder(body)
+
+	var data map[string]interface{}
+	err = dec.Decode(&data)
+	if err != nil {
+		return
+	}
+
+	var ok bool
+	typ, ok = data["type"].(string)
+	if !ok {
+		err = fmt.Errorf("\"type\" is required")
+		return
+	}
+	target, ok = data["target"].(string)
+	if !ok {
+		err = fmt.Errorf("\"target\" is required")
+		return
+	}
+	return
 }
