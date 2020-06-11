@@ -1,6 +1,6 @@
 {
     "name": "Euisu",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Yeongho's custom features",
     "permissions": [
         "clipboardWrite",

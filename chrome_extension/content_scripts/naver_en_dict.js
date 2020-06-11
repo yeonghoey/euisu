@@ -52,10 +52,10 @@ async function requestAnkiSave(target) {
   return json.basename;
 }
 
-function makeCopyButton(targetWord, playButton, meaningBlock) {
+function makeScrapButton(targetWord, playButton, meaningBlock) {
   const button = document.createElement('button');
   // TODO: make the appearance fancier
-  button.innerText = 'Copy';
+  button.innerText = 'Scrap';
   button.onclick = function onclick() {
     if (playButton === null) {
       const content = `${targetWord}\n${meaningBlock}`;
@@ -102,11 +102,6 @@ function collateMeaningBlock(row) {
 
 function extractFirstPlayButton(row) {
   return row.querySelector('.origin > .listen_list > :first-child button.btn_listen.play');
-
-  //   if (firstPlayButton === null) {
-  //   return '';
-  // }
-  // return firstPlayButton.getAttribute('purl');
 }
 
 function extractTargetWord(row) {
@@ -121,7 +116,7 @@ function processRow(row) {
 
   const euisuContainer = makeEuisuContainer();
   euisuContainer.appendChild(
-    makeCopyButton(targetWord, playButton, meaningBlock),
+    makeScrapButton(targetWord, playButton, meaningBlock),
   );
   euisuContainer.appendChild(
     makeImageButton(targetWord),
@@ -136,7 +131,7 @@ function processSection(section) {
   });
 }
 
-function injectMeaningBlockCopyButton() {
+function injectEuisu() {
   const keywordSections = [...document.getElementsByClassName('component_keyword')];
   keywordSections.forEach((section) => {
     processSection(section);
@@ -156,6 +151,6 @@ setInterval(() => {
   if (el.dataset.euisuInjected) {
     return;
   }
-  injectMeaningBlockCopyButton();
+  injectEuisu();
   el.dataset.euisuInjected = true;
 }, 500);
