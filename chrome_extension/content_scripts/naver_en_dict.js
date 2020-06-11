@@ -24,19 +24,19 @@ function appendEuisuContainerToOrigins(row, euisuContainer) {
   });
 }
 
-function makeImageButton(targetWord) {
+function makeImageButton(targetText) {
   const button = document.createElement('button');
   button.innerText = 'Image';
   button.onclick = function onclick() {
     chrome.runtime.sendMessage({
       type: 'createTab',
-      url: `https://www.google.com/search?tbm=isch&q=${targetWord}`,
+      url: `https://www.google.com/search?tbm=isch&q=${targetText}`,
     });
   };
   return button;
 }
 
-async function requestAnkiSave(target) {
+async function requestAnki(typ, target) {
   // TODO: Make this configurable.
   const url = 'http://localhost:8732/anki';
   const response = await fetch(url, {
@@ -45,6 +45,7 @@ async function requestAnkiSave(target) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
+      type: typ,
       target,
     }),
   });
@@ -52,21 +53,24 @@ async function requestAnkiSave(target) {
   return json.basename;
 }
 
-function makeScrapButton(targetWord, playButton, meaningBlock) {
+function makeScrapButton(targetText, playButton, meaningBlock) {
   const button = document.createElement('button');
   // TODO: make the appearance fancier
   button.innerText = 'Scrap';
   button.onclick = function onclick() {
-    if (playButton === null) {
-      const content = `${targetWord}\n${meaningBlock}`;
-      navigator.clipboard.writeText(content);
+    let typ = '';
+    let target = '';
+    if (playButton !== null) {
+      typ = 'download';
+      target = playButton.getAttribute('purl');
     } else {
-      const target = playButton.getAttribute('purl');
-      requestAnkiSave(target).then((basename) => {
-        const content = `${targetWord} [sound:${basename}]\n${meaningBlock}`;
-        navigator.clipboard.writeText(content);
-      });
+      typ = 'tts';
+      target = targetText;
     }
+    requestAnki(typ, target).then((basename) => {
+      const content = `${targetText} [sound:${basename}]\n${meaningBlock}`;
+      navigator.clipboard.writeText(content);
+    });
   };
   return button;
 }
@@ -103,22 +107,22 @@ function extractFirstPlayButton(row) {
   return row.querySelector('.origin > .listen_list > :first-child button.btn_listen.play');
 }
 
-function extractTargetWord(row) {
+function extractTargetText(row) {
   const el = row.querySelector('.origin > :first-child');
   return el.innerText.trim();
 }
 
 function processRow(row) {
-  const targetWord = extractTargetWord(row);
+  const targetText = extractTargetText(row);
   const playButton = extractFirstPlayButton(row);
   const meaningBlock = collateMeaningBlock(row);
 
   const euisuContainer = makeEuisuContainer();
   euisuContainer.appendChild(
-    makeScrapButton(targetWord, playButton, meaningBlock),
+    makeScrapButton(targetText, playButton, meaningBlock),
   );
   euisuContainer.appendChild(
-    makeImageButton(targetWord),
+    makeImageButton(targetText),
   );
   appendEuisuContainerToOrigins(row, euisuContainer);
 }
