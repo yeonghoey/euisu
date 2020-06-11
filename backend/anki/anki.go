@@ -121,5 +121,5 @@ func listen(filename string) {
 	default:
 		log.Fatalf("Unsupported OS: %s", os)
 	}
-	cmd.Run()
+	cmd.Start()
 }
