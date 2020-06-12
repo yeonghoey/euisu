@@ -91,7 +91,8 @@ function extractFirstPlayButton(row) {
 }
 
 function extractTargetText(row) {
-  const el = row.querySelector('.origin > :first-child');
+  const el = row.querySelector('.origin > :first-child').cloneNode(true);
+  [...el.getElementsByTagName('sup')].forEach((sup) => sup.remove());
   return el.innerText.trim();
 }
 
