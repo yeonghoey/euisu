@@ -1,6 +1,15 @@
 /**
+ * Utility functions
+ */
+function extractTextWithoutSup(el) {
+  const node = el.cloneNode(true);
+  [...node.getElementsByTagName('sup')].forEach((sup) => sup.remove());
+  return node.innerText.trim();
+}
+
+/**
  * Injects a button on each row of component_keyword section
- * in the search result page of en.dict.naver.com.
+ * into n.dict.naver.com/#/search
  *
  * The keyword section of the search result page is constructed like:
  * <div class="component_keyword">
@@ -91,9 +100,8 @@ function extractFirstPlayButton(row) {
 }
 
 function extractTargetText(row) {
-  const el = row.querySelector('.origin > :first-child').cloneNode(true);
-  [...el.getElementsByTagName('sup')].forEach((sup) => sup.remove());
-  return el.innerText.trim();
+  const el = row.querySelector('.origin > :first-child');
+  return extractTextWithoutSup(el);
 }
 
 function processRow(row) {
@@ -118,7 +126,7 @@ function processSection(section) {
   });
 }
 
-function injectEuisu() {
+function injectEuisuToSearchPage() {
   const keywordSections = [...document.getElementsByClassName('component_keyword')];
   keywordSections.forEach((section) => {
     processSection(section);
@@ -126,18 +134,55 @@ function injectEuisu() {
 }
 
 /**
+ * Injects a button on each row of
+ * into n.dict.naver.com/#/entry
+ */
+
+// function extractTitleText() {
+//   let el = document.querySelector('.entry_title > :first-child');
+//   if (el === null) {
+//     el = document.querySelector('.entry_title--saying > :first-child');
+//   }
+//   return extractTextWithoutSup(el);
+// }
+
+// function extractEntryPlayButton() {
+//   return document.querySelector('.entry_pronounce .tray > :first-child button.btn_listen.mp3');
+// }
+
+// function injectEuisuToEntryPage() {
+//   const targetText = extractTitleText();
+//   const playButton = extractEntryPlayButton();
+// }
+
+/**
  * NOTE: 'en.dict.naver.com' loads the page dynamically.
  * Just keep monitoring the page and injects the actual features
  * when the searchPage_entry element is fully loaded.
  */
 setInterval(() => {
-  const el = document.getElementById('searchPage_entry');
-  if (el === null) {
+  if (window.location.hash.startsWith('#/search')) {
+    const el = document.getElementById('searchPage_entry');
+    if (el === null) {
+      return;
+    }
+    if (el.dataset.euisuInjected) {
+      return;
+    }
+    injectEuisuToSearchPage();
+    el.dataset.euisuInjected = true;
     return;
   }
-  if (el.dataset.euisuInjected) {
-    return;
+
+  if (window.location.hash.startsWith('#/entry')) {
+    const el = document.querySelector('.article > .section_mean > .component_mean');
+    if (el === null) {
+      return;
+    }
+    if (el.dataset.euisuInjected) {
+      return;
+    }
+    // injectEuisuToEntryPage();
+    el.dataset.euisuInjected = true;
   }
-  injectEuisu();
-  el.dataset.euisuInjected = true;
 }, 500);
