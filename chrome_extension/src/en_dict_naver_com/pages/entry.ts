@@ -3,7 +3,10 @@
  * into n.dict.naver.com/#/entry
  */
 
-import { extractNormalizedText } from "src/en_dict_naver_com/target_text";
+import {
+  extractNormalizedTargetText,
+  extractNormalizedMeanText,
+} from "src/en_dict_naver_com/textextractor";
 import { createEuisu } from "src/en_dict_naver_com/euisu";
 
 export function injectEuisuToEntryPage(): void {
@@ -25,7 +28,7 @@ function extractTitleText(): string | null {
   if (el === null) {
     return null;
   }
-  return extractNormalizedText(el);
+  return extractNormalizedTargetText(el);
 }
 
 function extractAudioURL(): string | null {
@@ -49,7 +52,7 @@ function processMean(
   audioURL: string | null,
   mean: HTMLElement
 ): void {
-  const meaning = mean.innerText.trim();
+  const meaning = extractNormalizedMeanText(mean);
   const euisu = createEuisu(targetText, audioURL, meaning);
   mean.parentElement?.appendChild(euisu);
 }

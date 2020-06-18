@@ -18,7 +18,10 @@
  * injecting a button which copy this string into clipboard
  */
 
-import { extractNormalizedText } from "src/en_dict_naver_com/target_text";
+import {
+  extractNormalizedTargetText,
+  extractNormalizedMeanText,
+} from "src/en_dict_naver_com/textextractor";
 import { createEuisu } from "src/en_dict_naver_com/euisu";
 
 export function injectEuisuIntoSearchPage(): void {
@@ -47,7 +50,7 @@ function extractTargetText(row: HTMLElement): string | null {
   if (el === null) {
     return null;
   }
-  return extractNormalizedText(el);
+  return extractNormalizedTargetText(el);
 }
 
 function extractAudioURL(row: HTMLElement): string | null {
@@ -80,11 +83,10 @@ function convertMeanItemToMeanLine(meanItemOrg: HTMLElement): string {
   // Remove "word_class" which makes the mean line verbose.
   meanItem.querySelectorAll(".word_class").forEach((el) => el.remove());
 
-  const columns = [...meanItem.children]
+  return [...meanItem.children]
     .filter((el): el is HTMLElement => el instanceof HTMLElement)
-    .map((el) => el.innerText.trim());
-  const meanLine = columns.join(" ");
-  return meanLine;
+    .map(extractNormalizedMeanText)
+    .join(" ");
 }
 
 function appendEuisuToOrigin(row: HTMLElement, euisu: HTMLElement): void {
