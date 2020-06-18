@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "ES2020",
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "src": ["src"]
+    }
+  },
+  "include": [
+      "src/**/*.ts"
+  ],
+  "exclude": [
+      "node_modules",
+  ]
+}

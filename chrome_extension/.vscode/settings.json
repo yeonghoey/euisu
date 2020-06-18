@@ -4,5 +4,6 @@
         "source.fixAll.eslint": true
     },
     "editor.autoIndent": "brackets",
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "eslint.enable": true
 }

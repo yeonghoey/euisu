@@ -17,8 +17,7 @@
                 "*://en.dict.naver.com/*"
             ],
             "run_at": "document_idle",
-            "css": ["content_scripts/naver_en_dict.css"],
-            "js": ["content_scripts/naver_en_dict.js"]
+            "js": ["en_dict_naver_com.js"]
         }
     ],
     "manifest_version": 2
