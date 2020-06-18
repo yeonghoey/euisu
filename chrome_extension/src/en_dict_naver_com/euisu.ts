@@ -3,7 +3,7 @@ import { requestPostAnki, requestCreateTab } from "src/background/messages";
 export function createEuisu(
   targetText: string,
   audioURL: string | null,
-  meaning: string
+  meaning: string | null
 ): HTMLElement {
   const div = document.createElement("div");
   div.classList.add("euisu");
@@ -17,7 +17,7 @@ export function createEuisu(
 function makeScrapButton(
   targetText: string,
   audioURL: string | null,
-  meaning: string
+  meaning: string | null
 ) {
   // TODO: make the appearance fancier
   const button = document.createElement("button");
@@ -33,7 +33,8 @@ function makeScrapButton(
       target = targetText;
     }
     requestPostAnki(typ, target).then((resp) => {
-      const content = `${targetText} [sound:${resp.basename}]\n${meaning}`;
+      const head = `${targetText} [sound:${resp.basename}]`;
+      const content = meaning === null ? head : `${head}\n${meaning}`;
       navigator.clipboard.writeText(content);
     });
   };

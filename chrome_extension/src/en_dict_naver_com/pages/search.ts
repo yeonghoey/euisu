@@ -20,7 +20,7 @@
 
 import {
   extractNormalizedTargetText,
-  extractNormalizedMeanText,
+  extractNormalizedLineText,
 } from "src/en_dict_naver_com/textextractor";
 import { createEuisu } from "src/en_dict_naver_com/euisu";
 
@@ -85,7 +85,7 @@ function convertMeanItemToMeanLine(meanItemOrg: HTMLElement): string {
 
   return [...meanItem.children]
     .filter((el): el is HTMLElement => el instanceof HTMLElement)
-    .map(extractNormalizedMeanText)
+    .map(extractNormalizedLineText)
     .join(" ");
 }
 

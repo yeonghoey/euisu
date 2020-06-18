@@ -16,9 +16,9 @@ function dropSup(el: HTMLElement): HTMLElement {
   return el;
 }
 
-// Some meaning lines contain extraneous whilespaces which won't get trimmed.
+// Some line texts contain extraneous whitespaces which won't get trimmed.
 // To mitigate this, traverse each child node and trim on it then join altogether.
-export function extractNormalizedMeanText(el: HTMLElement): string {
+export function extractNormalizedLineText(el: HTMLElement): string {
   return [...el.childNodes]
     .map((node) => node.textContent?.replace(/\s\s+/g, " "))
     .filter((s): s is string => s !== undefined && s !== "")

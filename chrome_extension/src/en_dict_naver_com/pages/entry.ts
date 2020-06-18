@@ -5,11 +5,16 @@
 
 import {
   extractNormalizedTargetText,
-  extractNormalizedMeanText,
+  extractNormalizedLineText,
 } from "src/en_dict_naver_com/textextractor";
 import { createEuisu } from "src/en_dict_naver_com/euisu";
 
 export function injectEuisuToEntryPage(): void {
+  injectEuisuIntoMeaningLines();
+  injectEuisuIntoExampleItems();
+}
+
+function injectEuisuIntoMeaningLines(): void {
   const targetText = extractTitleText();
   if (targetText === null) {
     return;
@@ -52,7 +57,33 @@ function processMean(
   audioURL: string | null,
   mean: HTMLElement
 ): void {
-  const meaning = extractNormalizedMeanText(mean);
+  const meaning = extractNormalizedLineText(mean);
   const euisu = createEuisu(targetText, audioURL, meaning);
   mean.parentElement?.appendChild(euisu);
+}
+
+function injectEuisuIntoExampleItems(): void {
+  queryExampleItems().forEach(processExampleItem);
+}
+
+function queryExampleItems(): HTMLElement[] {
+  return [
+    ...document.querySelectorAll<HTMLElement>(
+      ".mean_list > .mean_item .example_item"
+    ),
+  ];
+}
+
+function processExampleItem(el: HTMLElement): void {
+  const originText = el.querySelector<HTMLElement>(".origin > .text");
+  if (originText === null) {
+    return;
+  }
+  const targetText = extractNormalizedLineText(originText);
+  const translateText = el.querySelector<HTMLElement>(".translate > .text");
+  const meaning =
+    translateText === null ? null : extractNormalizedLineText(translateText);
+  console.log(meaning);
+  const euisu = createEuisu(targetText, null, meaning);
+  originText.parentElement?.appendChild(euisu);
 }
