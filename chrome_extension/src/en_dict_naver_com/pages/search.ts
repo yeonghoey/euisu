@@ -73,11 +73,15 @@ function convertMeanListToMeanings(meanList: HTMLElement): string {
   return meaning;
 }
 
-function convertMeanItemToMeanLine(meanItem: HTMLElement): string {
-  const children = [...meanItem.children].filter(
-    (el): el is HTMLElement => el instanceof HTMLElement
-  );
-  const columns = children.map((el) => el.innerText.trim());
+function convertMeanItemToMeanLine(meanItemOrg: HTMLElement): string {
+  // Clone the original meanItem first so that it can be modified.
+  const meanItem = meanItemOrg.cloneNode(true) as HTMLElement;
+  // Remove "word_class" which makes the mean line verbose.
+  meanItem.querySelectorAll(".word_class").forEach((el) => el.remove());
+
+  const columns = [...meanItem.children]
+    .filter((el): el is HTMLElement => el instanceof HTMLElement)
+    .map((el) => el.innerText.trim());
   const meanLine = columns.join(" ");
   return meanLine;
 }
