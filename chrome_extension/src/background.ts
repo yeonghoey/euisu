@@ -1,3 +1,4 @@
+import { Message } from "src/messages";
 import { requestAnki } from "src/api/anki";
 
 // Message handler for content scripts
@@ -22,11 +23,6 @@ chrome.runtime.onMessage.addListener(
     return false;
   }
 );
-
-interface Message {
-  type: string;
-  [index: string]: any;
-}
 
 // Context menu
 chrome.runtime.onInstalled.addListener(() => {
