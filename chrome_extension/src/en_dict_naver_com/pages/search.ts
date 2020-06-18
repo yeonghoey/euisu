@@ -116,7 +116,7 @@ function makeScrapButton(
     }
     chrome.runtime.sendMessage(
       { type: "requestAnki", typ, target },
-      (basename) => {
+      (basename: string) => {
         const content = `${targetText} [sound:${basename}]\n${meaningBlock}`;
         navigator.clipboard.writeText(content);
       }
