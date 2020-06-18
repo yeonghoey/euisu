@@ -2,8 +2,9 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   env: {
-      browser: true,
-      webextensions: true,
+    browser: true,
+    es2020: true,
+    webextensions: true,
   },
   plugins: [
     '@typescript-eslint',
