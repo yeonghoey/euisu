@@ -1,3 +1,4 @@
+import * as path from "path";
 import * as webpack from "webpack";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import * as CopyWebpackPlugin from "copy-webpack-plugin";
@@ -23,6 +24,9 @@ const config: webpack.Configuration = {
   },
   resolve: {
     extensions: [".ts", ".js"],
+    alias: {
+      src: path.resolve(__dirname, "src"),
+    },
   },
   output: {
     filename: "[name].js",
