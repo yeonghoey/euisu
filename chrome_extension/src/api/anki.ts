@@ -1,4 +1,4 @@
-export async function requestAnki(req: AnkiRequest): Promise<AnkiResponse> {
+export async function postAnki(req: AnkiRequest): Promise<AnkiResponse> {
   // TODO: Make this configurable.
   const url = "http://localhost:8732/anki";
   const response = await fetch(url, {

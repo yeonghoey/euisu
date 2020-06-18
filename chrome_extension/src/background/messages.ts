@@ -1,51 +1,87 @@
-import { requestAnki } from "src/api/anki";
+// Define protocols between background script and content scripts.
+// Since some chrome features are only allowed to run on background scripts,
+// content scripts have to ask background scripts to do some tasks on their behalf.
+// Exported functions except "onMessage" are suppoed to be used by content scripts.
 
-type Message = CreateTab | RequestAnki;
-type Sender = chrome.runtime.MessageSender;
-type Response = FromRequestAnki | undefined;
-type Callback = (response: Response) => void;
+import { postAnki } from "src/api/anki";
 
-export function onMessage(
-  message: Message,
-  sender: Sender,
-  sendResponse: Callback
-): boolean {
-  switch (message.type) {
-    case "createTab":
-      return onCreateTab(message, sender);
-    case "requestAnki":
-      return onRequestAnki(message, sender, sendResponse);
-  }
-}
+type MsgReq = ReqPostAnki | ReqCreateTab;
+type MsgResp = RespPostAnki | void;
+type MsgSender = chrome.runtime.MessageSender;
+type MsgCallback = (response: MsgResp) => void;
 
-interface CreateTab {
-  type: "createTab";
-  url: string;
-}
-
-function onCreateTab(message: CreateTab, sender: Sender): boolean {
-  const tab = sender.tab;
-  if (tab === undefined) {
-    return false;
-  }
-  chrome.tabs.create({ url: message.url, index: tab.index + 1 });
-  return false;
-}
-
-interface RequestAnki {
-  type: "requestAnki";
+// PostAnki
+interface ReqPostAnki {
+  type: "postAnki";
   typ: string;
   target: string;
 }
 
-interface FromRequestAnki {
+interface RespPostAnki {
   basename: string;
 }
-function onRequestAnki(
-  message: RequestAnki,
-  sender: Sender,
-  sendResponse: (response: FromRequestAnki) => void
+
+export async function requestPostAnki(
+  typ: string,
+  target: string
+): Promise<RespPostAnki> {
+  return sendMessage({
+    type: "postAnki",
+    typ,
+    target,
+  } as ReqPostAnki);
+}
+
+// CreateTab
+interface ReqCreateTab {
+  type: "createTab";
+  url: string;
+}
+
+export async function requestCreateTab(url: string): Promise<void> {
+  return sendMessage({ type: "createTab", url } as ReqCreateTab);
+}
+
+// Wrap "chrome.runtime.sendMessage" to return Promise
+async function sendMessage<R extends MsgResp>(req: MsgReq): Promise<R> {
+  return new Promise<R>((resolve) => {
+    chrome.runtime.sendMessage(req, (resp: R) => resolve(resp));
+  });
+}
+
+// From this point, the fuctions are for handling messages,
+// which should be run on the background script.
+export function onMessage(
+  req: MsgReq,
+  sender: MsgSender,
+  sendResponse: MsgCallback
 ): boolean {
-  requestAnki({ type: message.typ, target: message.target }).then(sendResponse);
+  // IMPORTANT: Make sure to call sendResponse so that message channel can be closed.
+  switch (req.type) {
+    case "postAnki":
+      onRequestAnki(req, sender, sendResponse);
+      break;
+
+    case "createTab":
+      onCreateTab(req, sender);
+      sendResponse();
+      break;
+  }
   return true;
+}
+
+function onRequestAnki(
+  message: ReqPostAnki,
+  sender: MsgSender,
+  sendResponse: (resp: RespPostAnki) => void
+): void {
+  postAnki({ type: message.typ, target: message.target }).then(sendResponse);
+}
+
+function onCreateTab(message: ReqCreateTab, sender: MsgSender): void {
+  const tab = sender.tab;
+  if (tab === undefined) {
+    return;
+  }
+  chrome.tabs.create({ url: message.url, index: tab.index + 1 });
 }

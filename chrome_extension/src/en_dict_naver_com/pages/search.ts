@@ -19,6 +19,7 @@
  */
 
 import { extractNormalizedText } from "src/en_dict_naver_com/target_text";
+import { createEuisu } from "src/en_dict_naver_com/euisu";
 
 export function injectEuisuIntoSearchPage(): void {
   queryKeywordRows().forEach(processRow);
@@ -84,61 +85,6 @@ function convertMeanItemToMeanLine(meanItemOrg: HTMLElement): string {
     .map((el) => el.innerText.trim());
   const meanLine = columns.join(" ");
   return meanLine;
-}
-
-function createEuisu(
-  targetText: string,
-  audioURL: string | null,
-  meaningBlock: string
-): HTMLElement {
-  const div = document.createElement("div");
-  div.classList.add("euisu");
-  const scrapButoon = makeScrapButton(targetText, audioURL, meaningBlock);
-  div.appendChild(scrapButoon);
-  const imageButton = makeImageButton(targetText);
-  div.appendChild(imageButton);
-  return div;
-}
-
-function makeScrapButton(
-  targetText: string,
-  audioURL: string | null,
-  meaningBlock: string
-) {
-  // TODO: make the appearance fancier
-  const button = document.createElement("button");
-  button.innerText = "Scrap";
-  button.onclick = function onclick() {
-    let typ = "";
-    let target = "";
-    if (audioURL !== null) {
-      typ = "download";
-      target = audioURL;
-    } else {
-      typ = "tts";
-      target = targetText;
-    }
-    chrome.runtime.sendMessage(
-      { type: "requestAnki", typ, target },
-      (basename: string) => {
-        const content = `${targetText} [sound:${basename}]\n${meaningBlock}`;
-        navigator.clipboard.writeText(content);
-      }
-    );
-  };
-  return button;
-}
-
-function makeImageButton(targetText: string) {
-  const button = document.createElement("button");
-  button.innerText = "Image";
-  button.onclick = function onclick() {
-    chrome.runtime.sendMessage({
-      type: "createTab",
-      url: `https://www.google.com/search?tbm=isch&q=${targetText}`,
-    });
-  };
-  return button;
 }
 
 function appendEuisuToOrigin(row: HTMLElement, euisu: HTMLElement): void {

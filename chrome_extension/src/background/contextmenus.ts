@@ -1,4 +1,4 @@
-import { requestAnki } from "src/api/anki";
+import { postAnki } from "src/api/anki";
 import { copyToClipboard } from "src/background/clipboard";
 
 export function createContextMenus(): void {
@@ -17,7 +17,7 @@ export function onContextMenuClicked(
       return;
     }
     const text = info.selectionText.trim();
-    requestAnki({ type: "tts", target: text }).then((resp) => {
+    postAnki({ type: "tts", target: text }).then((resp) => {
       copyToClipboard(`${text} [sound:${resp.basename}]`);
     });
   }
