@@ -7,7 +7,7 @@ const config: webpack.Configuration = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    background: "./src/background.ts",
+    background: "./src/background/background.ts",
     en_dict_naver_com: "./src/en_dict_naver_com/en_dict_naver_com.ts",
   },
   module: {
