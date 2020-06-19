@@ -8,6 +8,7 @@ import {
   extractNormalizedLineText,
 } from "src/en_dict_naver_com/textextractor";
 import { createEuisu } from "src/en_dict_naver_com/euisu";
+import { processExamples } from "src/en_dict_naver_com/examples";
 
 export function injectEuisuToEntryPage(): void {
   injectEuisuIntoMeaningLines();
@@ -63,7 +64,7 @@ function processMean(
 }
 
 function injectEuisuIntoExampleItems(): void {
-  queryExampleItems().forEach(processExampleItem);
+  queryExampleItems().forEach(processExamples);
 }
 
 function queryExampleItems(): HTMLElement[] {
@@ -72,18 +73,4 @@ function queryExampleItems(): HTMLElement[] {
       ".mean_list > .mean_item .example_item"
     ),
   ];
-}
-
-function processExampleItem(el: HTMLElement): void {
-  const originText = el.querySelector<HTMLElement>(".origin > .text");
-  if (originText === null) {
-    return;
-  }
-  const targetText = extractNormalizedLineText(originText);
-  const translateText = el.querySelector<HTMLElement>(".translate > .text");
-  const meaning =
-    translateText === null ? null : extractNormalizedLineText(translateText);
-  console.log(meaning);
-  const euisu = createEuisu(targetText, null, meaning);
-  originText.parentElement?.appendChild(euisu);
 }

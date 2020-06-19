@@ -23,8 +23,14 @@ import {
   extractNormalizedLineText,
 } from "src/en_dict_naver_com/textextractor";
 import { createEuisu } from "src/en_dict_naver_com/euisu";
+import { processExamples } from "src/en_dict_naver_com/examples";
 
 export function injectEuisuIntoSearchPage(): void {
+  injectEuisuIntoKeywordRows();
+  injectEuisuIntoExampleRows();
+}
+
+function injectEuisuIntoKeywordRows(): void {
   queryKeywordRows().forEach(processRow);
 }
 
@@ -95,4 +101,14 @@ function appendEuisuToOrigin(row: HTMLElement, euisu: HTMLElement): void {
     return;
   }
   origin.appendChild(euisu);
+}
+
+function injectEuisuIntoExampleRows(): void {
+  queryExampleRows().forEach(processExamples);
+}
+
+function queryExampleRows(): HTMLElement[] {
+  return [
+    ...document.querySelectorAll<HTMLElement>(".component_example > .row"),
+  ];
 }

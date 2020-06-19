@@ -1,3 +1,3 @@
 .PHONY: dev
 dev:
-	npx webpack --watch
+	npx webpack
