@@ -10,7 +10,7 @@ import {
 import { createEuisu } from "src/en_dict_naver_com/euisu";
 import { processExamples } from "src/en_dict_naver_com/examples";
 
-export function injectEuisuToEntryPage(): void {
+export function injectEuisuToEntryMeaning(): void {
   injectEuisuIntoMeaningLines();
   injectEuisuIntoExampleItems();
 }
@@ -72,5 +72,15 @@ function queryExampleItems(): HTMLElement[] {
     ...document.querySelectorAll<HTMLElement>(
       ".mean_list > .mean_item .example_item"
     ),
+  ];
+}
+
+export function injectEuisuIntoEntryExampleRows(): void {
+  queryExampleRows().forEach(processExamples);
+}
+
+function queryExampleRows(): HTMLElement[] {
+  return [
+    ...document.querySelectorAll<HTMLElement>(".component_example > .row"),
   ];
 }

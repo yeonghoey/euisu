@@ -10,7 +10,6 @@ export function processExamples(el: HTMLElement): void {
   const translateText = el.querySelector<HTMLElement>(".translate > .text");
   const meaning =
     translateText === null ? null : extractNormalizedLineText(translateText);
-  console.log(meaning);
   const euisu = createEuisu(targetText, null, meaning);
   originText.parentElement?.appendChild(euisu);
 }
