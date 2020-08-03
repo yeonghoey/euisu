@@ -86,9 +86,6 @@ function convertMeanListToMeanings(meanList: HTMLElement): string {
 function convertMeanItemToMeanLine(meanItemOrg: HTMLElement): string {
   // Clone the original meanItem first so that it can be modified.
   const meanItem = meanItemOrg.cloneNode(true) as HTMLElement;
-  // Remove "word_class" which makes the mean line verbose.
-  meanItem.querySelectorAll(".word_class").forEach((el) => el.remove());
-
   return [...meanItem.children]
     .filter((el): el is HTMLElement => el instanceof HTMLElement)
     .map(extractNormalizedLineText)
