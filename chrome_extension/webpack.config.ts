@@ -9,6 +9,7 @@ const config: webpack.Configuration = {
   entry: {
     background: "./src/background/background.ts",
     en_dict_naver_com: "./src/en_dict_naver_com/en_dict_naver_com.ts",
+    www_youtube_com_watch: "./src/www_youtube_com/pages/watch.ts",
   },
   module: {
     rules: [

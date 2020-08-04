@@ -1,0 +1,9 @@
+.euisu {
+  display: inline-block;
+  margin: 0 0.8em;
+  vertical-align: top;
+}
+
+.euisu > * {
+  margin: 0.2em 0.2em;
+}
