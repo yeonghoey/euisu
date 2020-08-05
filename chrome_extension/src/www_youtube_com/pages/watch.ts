@@ -44,8 +44,10 @@ function createBlock(): HTMLElement {
 function createEuisu(title: HTMLElement): HTMLElement {
   const div = document.createElement("div");
   div.classList.add("euisu");
-  const button = makeTitleButton(title);
-  div.appendChild(button);
+  const titleButton = makeTitleButton(title);
+  div.appendChild(titleButton);
+  const screenshotButton = makeScreenshotButton();
+  div.appendChild(screenshotButton);
   return div;
 }
 
@@ -54,6 +56,15 @@ function makeTitleButton(title: HTMLElement) {
   button.innerText = "Title";
   button.onclick = function onclick() {
     navigator.clipboard.writeText(title.innerText);
+  };
+  return button;
+}
+
+function makeScreenshotButton() {
+  const button = document.createElement("button");
+  button.innerText = "Screenshot";
+  button.onclick = function onclick() {
+    console.log("Screenshot");
   };
   return button;
 }
