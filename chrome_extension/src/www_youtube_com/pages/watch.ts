@@ -6,9 +6,24 @@ function injectEuisu(): boolean {
     return false;
   }
 
+  const parent = title.parentNode;
+  if (parent === null) {
+    return false;
+  }
+
+  // NOTE: To place "div.euisu" right next to h1.title, which is 'block' element,
+  // surround it with an empty blocks and override title's display
+  // with "inline-block".
+  const blockBefore = createBlock();
+  parent.insertBefore(blockBefore, title);
+
   title.style.display = "inline-block";
+
   const euisu = createEuisu(title);
-  title.parentNode?.insertBefore(euisu, title.nextSibling);
+  parent.insertBefore(euisu, title.nextSibling);
+
+  const blockAfter = createBlock();
+  parent.insertBefore(blockAfter, euisu.nextSibling);
   return true;
 }
 
@@ -18,6 +33,12 @@ function retrieveTitle(): HTMLElement | null {
   );
   const title = primary?.querySelector<HTMLElement>("h1.title");
   return title || null;
+}
+
+function createBlock(): HTMLElement {
+  const div = document.createElement("div");
+  div.classList.add("euisu-block");
+  return div;
 }
 
 function createEuisu(title: HTMLElement): HTMLElement {

@@ -7,3 +7,11 @@
 .euisu > * {
   margin: 0.2em 0.2em;
 }
+
+.euisu-block {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
