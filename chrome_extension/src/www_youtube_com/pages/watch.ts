@@ -1,5 +1,5 @@
 import "src/www_youtube_com/style.css";
-import { copyImageToClipboard } from "src/www_youtube_com/clipboard";
+import { copyImageToClipboard } from "src/www_youtube_com/clipboard.js";
 
 function injectEuisu(): boolean {
   const title = retrieveTitle();
