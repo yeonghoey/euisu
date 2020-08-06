@@ -11,7 +11,22 @@
         "scripts": ["background.js"],
         "persistent": false
     },
+    "commands": {
+        "copy-media-snapshot": {
+            "suggested_key": {
+              "default": "Alt+Shift+C"
+            },
+            "description": "Copy a media snapshot to clipboard"
+        }
+    },
     "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "run_at": "document_idle",
+            "js": ["delegator.js"]
+        },
         {
             "matches": [
                 "*://en.dict.naver.com/*"
