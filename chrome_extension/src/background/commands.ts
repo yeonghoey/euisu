@@ -1,6 +1,9 @@
+import { showSnackbar } from "src/content_agent/snackbar";
+
 export function handleCommands(command: string): void {
   if (command === "copy-media-snapshot") {
     copyMediaSnapshot();
+    showSnackbar("Video Captured!");
   }
 }
 

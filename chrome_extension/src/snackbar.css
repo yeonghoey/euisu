@@ -17,7 +17,7 @@
   padding: 1em;
   background-color: #333;
 
-  animation: 4s euisuSnackbarInOut;
+  animation: 3s euisuSnackbarInOut;
 }
 
 @keyframes euisuSnackbarInOut {

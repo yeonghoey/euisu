@@ -1,4 +1,5 @@
 import "src/www_youtube_com/style.css";
+import { showSnackbar } from "src/snackbar";
 import { copyImageToClipboard } from "src/content_scripts/clipboard.js";
 
 function injectEuisu(): boolean {
@@ -63,6 +64,7 @@ function makeTitleButton(title: HTMLElement) {
   button.innerText = "Title";
   button.onclick = function onclick() {
     navigator.clipboard.writeText(title.innerText);
+    showSnackbar("Title copied!");
   };
   return button;
 }

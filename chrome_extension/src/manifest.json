@@ -25,7 +25,7 @@
                 "<all_urls>"
             ],
             "run_at": "document_idle",
-            "js": ["delegator.js"]
+            "js": ["delegator.js", "content_agent.js"]
         },
         {
             "matches": [

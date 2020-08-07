@@ -8,6 +8,7 @@ const config: webpack.Configuration = {
   devtool: "inline-source-map",
   entry: {
     background: "./src/background/background.ts",
+    content_agent: "./src/content_agent/content_agent.ts",
     delegator: "./src/content_scripts/delegator.ts",
     en_dict_naver_com: "./src/en_dict_naver_com/en_dict_naver_com.ts",
     www_youtube_com_watch: "./src/www_youtube_com/pages/watch.ts",
