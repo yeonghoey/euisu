@@ -1,0 +1,28 @@
+@font-face {
+  font-family: 'Roboto';
+  src:  urls('src/fonts/roboto.ttf') format('ttf');
+}
+
+#euisu-snackbar {
+  position: fixed;
+  z-index: 1;
+
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5em;
+  color: #fff;
+  text-align: left;
+
+  left: 40px;
+  min-width: 240px;
+  padding: 1em;
+  background-color: #333;
+
+  animation: 4s euisuSnackbarInOut;
+}
+
+@keyframes euisuSnackbarInOut {
+    0% { bottom: 0; opacity: 0; }
+   10% { bottom: 30px; opacity: 1; }
+   90% { bottom: 30px; opacity: 1; }
+  100% { bottom: 0; opacity: 0}
+}
