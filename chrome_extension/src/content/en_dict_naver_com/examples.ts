@@ -1,5 +1,5 @@
-import { extractNormalizedLineText } from "src/en_dict_naver_com/textextractor";
-import { createEuisu } from "src/en_dict_naver_com/euisu";
+import { extractNormalizedLineText } from "src/content/en_dict_naver_com/textextractor";
+import { createEuisu } from "src/content/en_dict_naver_com/euisu";
 
 export function processExamples(el: HTMLElement): void {
   const originText = el.querySelector<HTMLElement>(".origin > .text");

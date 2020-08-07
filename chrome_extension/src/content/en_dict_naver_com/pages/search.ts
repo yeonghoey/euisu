@@ -21,9 +21,9 @@
 import {
   extractNormalizedTargetText,
   extractNormalizedLineText,
-} from "src/en_dict_naver_com/textextractor";
-import { createEuisu } from "src/en_dict_naver_com/euisu";
-import { processExamples } from "src/en_dict_naver_com/examples";
+} from "src/content/en_dict_naver_com/textextractor";
+import { createEuisu } from "src/content/en_dict_naver_com/euisu";
+import { processExamples } from "src/content/en_dict_naver_com/examples";
 
 export function injectEuisuIntoSearchPage(): void {
   injectEuisuIntoKeywordRows();

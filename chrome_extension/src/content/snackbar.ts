@@ -1,4 +1,4 @@
-import "src/core/snackbar.css";
+import "src/content/snackbar.css";
 
 export function showSnackbar(text: string): void {
   const div = document.createElement("div");

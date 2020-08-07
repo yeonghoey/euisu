@@ -8,10 +8,10 @@ const config: webpack.Configuration = {
   devtool: "inline-source-map",
   entry: {
     background: "./src/background/background.ts",
-    content_agent: "./src/content_agent.ts",
-    delegator: "./src/content_scripts/delegator.ts",
-    en_dict_naver_com: "./src/en_dict_naver_com/en_dict_naver_com.ts",
-    www_youtube_com_watch: "./src/www_youtube_com/pages/watch.ts",
+    background_to_content_listener:
+      "./src/content/all_urls/background_to_content_listener.ts",
+    en_dict_naver_com: "./src/content/en_dict_naver_com/en_dict_naver_com.ts",
+    www_youtube_com_watch: "./src/content/www_youtube_com/pages/watch.ts",
   },
   module: {
     rules: [

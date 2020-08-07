@@ -1,9 +1,9 @@
-import "src/en_dict_naver_com/style.css";
-import { injectEuisuIntoSearchPage } from "src/en_dict_naver_com/pages/search";
+import "src/content/en_dict_naver_com/style.css";
+import { injectEuisuIntoSearchPage } from "src/content/en_dict_naver_com/pages/search";
 import {
   injectEuisuToEntryMeaning,
   injectEuisuIntoEntryExampleRows,
-} from "src/en_dict_naver_com/pages/entry";
+} from "src/content/en_dict_naver_com/pages/entry";
 
 /**
  * NOTE: 'en.dict.naver.com' loads the page dynamically.

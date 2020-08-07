@@ -1,6 +1,6 @@
-import "src/www_youtube_com/style.css";
-import { showSnackbar } from "src/snackbar";
-import { copyImageToClipboard } from "src/content_scripts/clipboard.js";
+import "src/content/www_youtube_com/style.css";
+import { showSnackbar } from "src/content/snackbar";
+import { clipboardWriteBlob } from "src/content/clipboard";
 
 function injectEuisu(): boolean {
   const title = retrieveTitle();
@@ -74,7 +74,7 @@ function makeScreenshotButton(video: HTMLVideoElement) {
   button.innerText = "Screenshot";
   button.onclick = async function onclick() {
     const blob = await captureVideo(video);
-    await copyImageToClipboard(blob);
+    await clipboardWriteBlob(blob);
     // TODO: Notify it's done.
   };
   return button;

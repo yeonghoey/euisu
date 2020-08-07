@@ -1,24 +1,17 @@
-import { copyImageToClipboard } from "src/content_scripts/clipboard.js";
+import { clipboardWriteBlob } from "src/content/clipboard";
+import { showSnackbar } from "src/content/snackbar";
 
-function main() {
-  chrome.runtime.onMessage.addListener((message) => {
-    if (message.name === "delegateCopyMediaSnapshot") {
-      copyMediaSnapshot();
-    }
-  });
-}
-
-async function copyMediaSnapshot(): Promise<void> {
-  // TODO: Support image, too.
+export async function captureVideo(): Promise<void> {
   const video = document.querySelector<HTMLVideoElement>("video");
   if (video === null) {
     return;
   }
-  const blob = await captureVideo(video);
-  await copyImageToClipboard(blob);
+  const blob = await snapshotOfVideo(video);
+  await clipboardWriteBlob(blob);
+  showSnackbar("Video captured");
 }
 
-async function captureVideo(video: HTMLVideoElement): Promise<Blob> {
+async function snapshotOfVideo(video: HTMLVideoElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
@@ -40,5 +33,3 @@ async function captureVideo(video: HTMLVideoElement): Promise<Blob> {
     }, "image/png");
   });
 }
-
-main();

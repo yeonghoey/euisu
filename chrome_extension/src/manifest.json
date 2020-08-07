@@ -12,11 +12,11 @@
         "persistent": false
     },
     "commands": {
-        "copy-media-snapshot": {
+        "capture-video": {
             "suggested_key": {
               "default": "Alt+Shift+C"
             },
-            "description": "Copy a media snapshot to clipboard"
+            "description": "Capture video"
         }
     },
     "content_scripts": [
@@ -25,7 +25,7 @@
                 "<all_urls>"
             ],
             "run_at": "document_idle",
-            "js": ["delegator.js", "content_agent.js"]
+            "js": ["background_to_content_listener.js"]
         },
         {
             "matches": [
