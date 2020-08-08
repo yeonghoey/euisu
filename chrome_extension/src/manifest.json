@@ -5,7 +5,9 @@
     "permissions": [
         "clipboardWrite",
         "contextMenus",
-        "tabs"
+        "tabs",
+        "webNavigation",
+        "<all_urls>"
     ],
     "background": {
         "scripts": ["background.js"],
@@ -33,13 +35,6 @@
             ],
             "run_at": "document_idle",
             "js": ["en_dict_naver_com.js"]
-        },
-        {
-            "matches": [
-                "*://www.youtube.com/watch*"
-            ],
-            "run_at": "document_idle",
-            "js": ["www_youtube_com_watch.js"]
         }
     ],
     "manifest_version": 2

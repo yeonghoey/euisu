@@ -3,6 +3,9 @@ import { showSnackbar } from "src/content/snackbar";
 import { clipboardWriteBlob } from "src/content/clipboard";
 
 function injectEuisu(): boolean {
+  if (isAlreadyInjected()) {
+    return true;
+  }
   const title = retrieveTitle();
   if (title === null) {
     return false;
@@ -31,6 +34,10 @@ function injectEuisu(): boolean {
   const blockAfter = createBlock();
   parent.insertBefore(blockAfter, euisu.nextSibling);
   return true;
+}
+
+function isAlreadyInjected(): boolean {
+  return document.querySelector(".euisu") !== null;
 }
 
 function retrieveTitle(): HTMLElement | null {
