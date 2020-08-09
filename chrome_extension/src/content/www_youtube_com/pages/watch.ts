@@ -76,7 +76,7 @@ function createEuisu(
   div.appendChild(makeTitleButton(title));
   div.appendChild(makeURLButton(videoId));
   div.appendChild(makeURLAtCurrentButton(videoId, video));
-  div.appendChild(makeThumbnailButton(videoId, video));
+  div.appendChild(makeThumbnailButton(videoId));
   div.appendChild(makeScreenshotButton(video));
 
   return div;
@@ -119,14 +119,13 @@ function makeURLAtCurrentButton(
   return button;
 }
 
-function makeThumbnailButton(
-  videoId: string,
-  video: HTMLVideoElement
-): HTMLElement {
+function makeThumbnailButton(videoId: string): HTMLElement {
   const button = document.createElement("button");
   button.innerText = "Thumbnail";
   button.addEventListener("click", async () => {
-    const blob = await screenshotOfVideo(video);
+    const url = `http://localhost:8732/youtube/thumbnail?v=${videoId}`;
+    const response = await fetch(url);
+    const blob = await response.blob();
     await clipboardWriteBlob(blob);
     showSnackbar("Thumbnail copied!");
   });
