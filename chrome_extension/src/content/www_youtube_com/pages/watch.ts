@@ -4,10 +4,28 @@ import { screenshotOfVideo, currentTimeOfVideo } from "src/content/video";
 import { clipboardWriteText, clipboardWriteBlob } from "src/content/clipboard";
 import { urlParamGet } from "src/content/url";
 
+function main(): void {
+  const DELAY = 500;
+
+  // NOTE: YouTube reuses the same DOM elements and because of the fact,
+  // buttons will keep the first loaded contexts.
+  // To make sure for buttons to have current context,
+  // remove the pre-existing euisu at load time.
+  clearEuisu();
+
+  setTimeout(function tryInjectEuisu(): void {
+    const success = injectEuisu();
+    if (!success) {
+      setTimeout(tryInjectEuisu, DELAY);
+    }
+  }, DELAY);
+}
+
 function injectEuisu(): boolean {
   if (isAlreadyInjected()) {
     return true;
   }
+
   const videoId = retrieveVideoId();
   if (videoId === null) {
     return false;
@@ -40,6 +58,10 @@ function injectEuisu(): boolean {
   const blockAfter = createBlock();
   parent.insertBefore(blockAfter, euisu.nextSibling);
   return true;
+}
+
+function clearEuisu(): void {
+  document.querySelector(".euisu")?.remove();
 }
 
 function isAlreadyInjected(): boolean {
@@ -144,11 +166,4 @@ function makeScreenshotButton(video: HTMLVideoElement): HTMLElement {
 }
 
 // -------------------------------------------
-const DELAY = 500;
-
-setTimeout(function tryInjectEuisu(): void {
-  const success = injectEuisu();
-  if (!success) {
-    setTimeout(tryInjectEuisu, DELAY);
-  }
-}, DELAY);
+main();
