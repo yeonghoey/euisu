@@ -26,5 +26,6 @@ func (s *Server) buildMux() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.Handle("/", newEchoHandler())
 	mux.Handle("/anki", newAnkiHandler(s.Anki))
+	mux.Handle("/youtube/", http.StripPrefix("/youtube", newYouTubeHandler()))
 	return mux
 }
