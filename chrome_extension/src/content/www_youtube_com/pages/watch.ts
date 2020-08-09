@@ -1,11 +1,16 @@
 import "src/content/www_youtube_com/pages/watch.css";
 import { showSnackbar } from "src/content/snackbar";
-import { screenshotOfVideo } from "src/content/video";
+import { screenshotOfVideo, currentTimeOfVideo } from "src/content/video";
 import { clipboardWriteText, clipboardWriteBlob } from "src/content/clipboard";
+import { urlParamGet } from "src/content/url";
 
 function injectEuisu(): boolean {
   if (isAlreadyInjected()) {
     return true;
+  }
+  const videoId = retrieveVideoId();
+  if (videoId === null) {
+    return false;
   }
   const title = retrieveTitle();
   if (title === null) {
@@ -29,7 +34,7 @@ function injectEuisu(): boolean {
 
   title.style.display = "inline-block";
 
-  const euisu = createEuisu(title, video);
+  const euisu = createEuisu(videoId, title, video);
   parent.insertBefore(euisu, title.nextSibling);
 
   const blockAfter = createBlock();
@@ -39,6 +44,10 @@ function injectEuisu(): boolean {
 
 function isAlreadyInjected(): boolean {
   return document.querySelector(".euisu") !== null;
+}
+
+function retrieveVideoId(): string | null {
+  return urlParamGet("v");
 }
 
 function retrieveTitle(): HTMLElement | null {
@@ -57,13 +66,17 @@ function createBlock(): HTMLElement {
   return div;
 }
 
-function createEuisu(title: HTMLElement, video: HTMLVideoElement): HTMLElement {
+function createEuisu(
+  videoId: string,
+  title: HTMLElement,
+  video: HTMLVideoElement
+): HTMLElement {
   const div = document.createElement("div");
   div.classList.add("euisu");
   div.appendChild(makeTitleButton(title));
-  div.appendChild(makeURLButton("test"));
-  div.appendChild(makeURLAtCurrentButton("test", video));
-  div.appendChild(makeThumbnailButton(video));
+  div.appendChild(makeURLButton(videoId));
+  div.appendChild(makeURLAtCurrentButton(videoId, video));
+  div.appendChild(makeThumbnailButton(videoId, video));
   div.appendChild(makeScreenshotButton(video));
 
   return div;
@@ -73,36 +86,43 @@ function makeTitleButton(title: HTMLElement): HTMLElement {
   const button = document.createElement("button");
   button.innerText = "Title";
   button.addEventListener("click", async () => {
-    await clipboardWriteText(title.innerText);
-    showSnackbar("Title copied!");
+    const titleText = title.innerText;
+    await clipboardWriteText(titleText);
+    showSnackbar(`"${titleText}" copied`);
   });
   return button;
 }
 
-function makeURLButton(v: string): HTMLElement {
+function makeURLButton(videoId: string): HTMLElement {
   const button = document.createElement("button");
   button.innerText = "URL";
   button.addEventListener("click", async () => {
-    await clipboardWriteText(v);
-    showSnackbar("URL copied!");
+    const url = `https://youtu.be/${videoId}`;
+    await clipboardWriteText(url);
+    showSnackbar(`"${url}" copied`);
   });
   return button;
 }
 
 function makeURLAtCurrentButton(
-  v: string,
+  videoId: string,
   video: HTMLVideoElement
 ): HTMLElement {
   const button = document.createElement("button");
   button.innerText = "URL@";
   button.addEventListener("click", async () => {
-    await clipboardWriteText(v);
-    showSnackbar("URL at current time copied!");
+    const t = Math.round(currentTimeOfVideo(video));
+    const url = `https://youtu.be/${videoId}?t=${t}`;
+    await clipboardWriteText(url);
+    showSnackbar(`"${url}" copied`);
   });
   return button;
 }
 
-function makeThumbnailButton(video: HTMLVideoElement): HTMLElement {
+function makeThumbnailButton(
+  videoId: string,
+  video: HTMLVideoElement
+): HTMLElement {
   const button = document.createElement("button");
   button.innerText = "Thumbnail";
   button.addEventListener("click", async () => {

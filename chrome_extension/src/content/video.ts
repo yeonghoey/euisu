@@ -22,3 +22,7 @@ export async function screenshotOfVideo(
     }, "image/png");
   });
 }
+
+export function currentTimeOfVideo(video: HTMLVideoElement): number {
+  return video.currentTime;
+}
