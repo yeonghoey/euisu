@@ -17,7 +17,7 @@ func newYouTubeHandler() http.Handler {
 func newYouTubeThumbnailHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		videoID := r.URL.Query().Get("v")
-		target := fmt.Sprintf("https://i.ytimg.com/vi/%s/hqdefault.jpg", videoID)
+		target := fmt.Sprintf("https://i.ytimg.com/vi/%s/mqdefault.jpg", videoID)
 		resp, err := http.Get(target)
 		if err != nil {
 			err = fmt.Errorf("GET %v failed: %w", target, err)
