@@ -1,6 +1,7 @@
-import "src/content/www_youtube_com/style.css";
+import "src/content/www_youtube_com/pages/watch.css";
 import { showSnackbar } from "src/content/snackbar";
-import { clipboardWriteBlob } from "src/content/clipboard";
+import { screenshotOfVideo } from "src/content/video";
+import { clipboardWriteText, clipboardWriteBlob } from "src/content/clipboard";
 
 function injectEuisu(): boolean {
   if (isAlreadyInjected()) {
@@ -59,55 +60,68 @@ function createBlock(): HTMLElement {
 function createEuisu(title: HTMLElement, video: HTMLVideoElement): HTMLElement {
   const div = document.createElement("div");
   div.classList.add("euisu");
-  const titleButton = makeTitleButton(title);
-  div.appendChild(titleButton);
-  const screenshotButton = makeScreenshotButton(video);
-  div.appendChild(screenshotButton);
+  div.appendChild(makeTitleButton(title));
+  div.appendChild(makeURLButton("test"));
+  div.appendChild(makeURLAtCurrentButton("test", video));
+  div.appendChild(makeThumbnailButton(video));
+  div.appendChild(makeScreenshotButton(video));
+
   return div;
 }
 
-function makeTitleButton(title: HTMLElement) {
+function makeTitleButton(title: HTMLElement): HTMLElement {
   const button = document.createElement("button");
   button.innerText = "Title";
-  button.onclick = function onclick() {
-    navigator.clipboard.writeText(title.innerText);
+  button.addEventListener("click", async () => {
+    await clipboardWriteText(title.innerText);
     showSnackbar("Title copied!");
-  };
+  });
   return button;
 }
 
-function makeScreenshotButton(video: HTMLVideoElement) {
+function makeURLButton(v: string): HTMLElement {
+  const button = document.createElement("button");
+  button.innerText = "URL";
+  button.addEventListener("click", async () => {
+    await clipboardWriteText(v);
+    showSnackbar("URL copied!");
+  });
+  return button;
+}
+
+function makeURLAtCurrentButton(
+  v: string,
+  video: HTMLVideoElement
+): HTMLElement {
+  const button = document.createElement("button");
+  button.innerText = "URL@";
+  button.addEventListener("click", async () => {
+    await clipboardWriteText(v);
+    showSnackbar("URL at current time copied!");
+  });
+  return button;
+}
+
+function makeThumbnailButton(video: HTMLVideoElement): HTMLElement {
+  const button = document.createElement("button");
+  button.innerText = "Thumbnail";
+  button.addEventListener("click", async () => {
+    const blob = await screenshotOfVideo(video);
+    await clipboardWriteBlob(blob);
+    showSnackbar("Thumbnail copied!");
+  });
+  return button;
+}
+
+function makeScreenshotButton(video: HTMLVideoElement): HTMLElement {
   const button = document.createElement("button");
   button.innerText = "Screenshot";
-  button.onclick = async function onclick() {
-    const blob = await captureVideo(video);
+  button.addEventListener("click", async () => {
+    const blob = await screenshotOfVideo(video);
     await clipboardWriteBlob(blob);
-    // TODO: Notify it's done.
-  };
-  return button;
-}
-
-async function captureVideo(video: HTMLVideoElement): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const context = canvas.getContext("2d");
-    if (context === null) {
-      reject(null);
-      return;
-    }
-    context.drawImage(video, 0, 0);
-    canvas.toBlob((blob) => {
-      if (blob !== null) {
-        resolve(blob);
-        return;
-      } else {
-        reject(null);
-        return;
-      }
-    }, "image/png");
+    showSnackbar("Screenshot copied!");
   });
+  return button;
 }
 
 // -------------------------------------------

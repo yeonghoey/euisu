@@ -7,10 +7,10 @@ export function requestShowSnackbar(text: string): void {
   } as btc.RequestShowSnackbar);
 }
 
-export function requestCaptureVideo(): void {
+export function requestCopyScreenshotOfFirstVideo(): void {
   requestToContent({
-    type: "RequestCaptureVideo",
-  } as btc.RequestCaptureVideo);
+    type: "RequestCopyScreenshotOfFirstVideo",
+  } as btc.RequestCopyScreenshotOfFirstVideo);
 }
 
 function requestToContent(request: btc.Request): void {

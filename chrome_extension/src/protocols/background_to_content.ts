@@ -3,8 +3,8 @@ export interface RequestShowSnackbar {
   text: string;
 }
 
-export interface RequestCaptureVideo {
-  type: "RequestCaptureVideo";
+export interface RequestCopyScreenshotOfFirstVideo {
+  type: "RequestCopyScreenshotOfFirstVideo";
 }
 
-export type Request = RequestShowSnackbar | RequestCaptureVideo;
+export type Request = RequestShowSnackbar | RequestCopyScreenshotOfFirstVideo;

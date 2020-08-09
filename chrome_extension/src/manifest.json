@@ -14,11 +14,11 @@
         "persistent": false
     },
     "commands": {
-        "capture-video": {
+        "copy-screenshot-of-first-video": {
             "suggested_key": {
               "default": "Alt+Shift+C"
             },
-            "description": "Capture video"
+            "description": "Copy screenshot of first video"
         }
     },
     "content_scripts": [

@@ -1,6 +1,6 @@
 import { Request } from "src/protocols/background_to_content";
 import { showSnackbar } from "src/content/snackbar";
-import { captureVideo } from "src/content/capturing";
+import { copyScreenshotOfFirstVideo } from "src/content/actions";
 
 chrome.runtime.onMessage.addListener((message) => {
   const request = message as Request;
@@ -8,8 +8,8 @@ chrome.runtime.onMessage.addListener((message) => {
     case "RequestShowSnackbar":
       showSnackbar(request.text);
       break;
-    case "RequestCaptureVideo":
-      captureVideo();
+    case "RequestCopyScreenshotOfFirstVideo":
+      copyScreenshotOfFirstVideo();
       break;
   }
 });

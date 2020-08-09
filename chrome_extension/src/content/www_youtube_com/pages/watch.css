@@ -1,11 +1,13 @@
 .euisu {
   display: inline-block;
-  margin: 0 0.8em;
+  margin: 0.2em 0.8em;
   vertical-align: top;
 }
 
 .euisu > * {
-  margin: 0.2em 0.2em;
+  margin: 0.2em;
+  padding: 0.1em;
+  font-size: 0.8em;
 }
 
 .euisu-block {
