@@ -2,9 +2,10 @@ package server
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
+
+	"github.com/yeonghoey/euisu/backend/image"
 )
 
 func newYouTubeHandler() http.Handler {
@@ -14,18 +15,31 @@ func newYouTubeHandler() http.Handler {
 }
 
 func newYouTubeThumbnailHandler() http.Handler {
-	director := func(req *http.Request) {
-		videoID := req.URL.Query().Get("v")
-		thumbnailURL := fmt.Sprintf("https://i.ytimg.com/vi/%s/hqdefault.jpg", videoID)
-		target, err := url.Parse(thumbnailURL)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		videoID := r.URL.Query().Get("v")
+		target := fmt.Sprintf("https://i.ytimg.com/vi/%s/hqdefault.jpg", videoID)
+		resp, err := http.Get(target)
 		if err != nil {
+			err = fmt.Errorf("GET %v failed: %w", target, err)
 			return
 		}
-		req.Host = target.Host
-		req.URL.Scheme = target.Scheme
-		req.URL.Host = target.Host
-		req.URL.Path = target.Path
-		req.URL.RawQuery = ""
-	}
-	return &httputil.ReverseProxy{Director: director}
+		defer resp.Body.Close()
+
+		jpgBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		pngBytes, err := image.EnsurePNG(jpgBytes)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "image/png")
+		if _, err := w.Write(pngBytes); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	})
 }
