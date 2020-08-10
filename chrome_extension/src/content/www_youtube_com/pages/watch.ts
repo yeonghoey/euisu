@@ -95,24 +95,24 @@ function createEuisu(
   const urlButton = makeURLButton(videoId);
   div.appendChild(urlButton);
 
-  const thumbnailButton = makeThumbnailButton(videoId);
-  div.appendChild(thumbnailButton);
+  const urlAtCurrentButton = makeURLAtCurrentButton(videoId, video);
+  div.appendChild(urlAtCurrentButton);
 
   div.appendChild(makeSpacer());
 
   const screenshotButton = makeScreenshotButton(video);
   div.appendChild(screenshotButton);
 
-  const urlAtCurrentButton = makeURLAtCurrentButton(videoId, video);
-  div.appendChild(urlAtCurrentButton);
+  const thumbnailButton = makeThumbnailButton(videoId);
+  div.appendChild(thumbnailButton);
 
   // Shortcuts
   const shortcuts: Shortcuts = {
     Digit1: titleButton,
     Digit2: urlButton,
-    Digit3: thumbnailButton,
+    Digit3: urlAtCurrentButton,
     Digit4: screenshotButton,
-    Digit5: urlAtCurrentButton,
+    Digit5: thumbnailButton,
   };
 
   document.addEventListener(
