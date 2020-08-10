@@ -38,25 +38,18 @@ function injectEuisu(): boolean {
   if (video === null) {
     return false;
   }
+  const rightControls = retrieveRightControls();
+  if (rightControls === null) {
+    return false;
+  }
 
-  const parent = title.parentNode;
+  const parent = rightControls.parentNode;
   if (parent === null) {
     return false;
   }
 
-  // NOTE: To place "div.euisu" right next to h1.title, which is 'block' element,
-  // surround it with an empty blocks and override title's display
-  // with "inline-block".
-  const blockBefore = createBlock();
-  parent.insertBefore(blockBefore, title);
-
-  title.style.display = "inline-block";
-
   const euisu = createEuisu(videoId, title, video);
-  parent.insertBefore(euisu, title.nextSibling);
-
-  const blockAfter = createBlock();
-  parent.insertBefore(blockAfter, euisu.nextSibling);
+  parent.appendChild(euisu);
   return true;
 }
 
@@ -82,10 +75,8 @@ function retrieveVideo(): HTMLVideoElement | null {
   return document.querySelector<HTMLVideoElement>("#primary video");
 }
 
-function createBlock(): HTMLElement {
-  const div = document.createElement("div");
-  div.classList.add("euisu-block");
-  return div;
+function retrieveRightControls(): HTMLElement | null {
+  return document.querySelector<HTMLElement>(".ytp-right-controls");
 }
 
 function createEuisu(
