@@ -88,9 +88,10 @@ function createEuisu(
   div.classList.add("euisu");
   div.appendChild(makeTitleButton(title));
   div.appendChild(makeURLButton(videoId));
-  div.appendChild(makeURLAtCurrentButton(videoId, video));
   div.appendChild(makeThumbnailButton(videoId));
+  div.appendChild(makeSpacer());
   div.appendChild(makeScreenshotButton(video));
+  div.appendChild(makeURLAtCurrentButton(videoId, video));
 
   return div;
 }
@@ -117,21 +118,6 @@ function makeURLButton(videoId: string): HTMLElement {
   return button;
 }
 
-function makeURLAtCurrentButton(
-  videoId: string,
-  video: HTMLVideoElement
-): HTMLElement {
-  const button = document.createElement("button");
-  button.innerText = "URL@";
-  button.addEventListener("click", async () => {
-    const t = Math.round(currentTimeOfVideo(video));
-    const url = `https://youtu.be/${videoId}?t=${t}`;
-    await clipboardWriteText(url);
-    showSnackbar(`"${url}" copied`);
-  });
-  return button;
-}
-
 function makeThumbnailButton(videoId: string): HTMLElement {
   const button = document.createElement("button");
   button.innerText = "Thumbnail";
@@ -145,6 +131,11 @@ function makeThumbnailButton(videoId: string): HTMLElement {
   return button;
 }
 
+function makeSpacer(): HTMLElement {
+  const spacer = document.createElement("span");
+  return spacer;
+}
+
 function makeScreenshotButton(video: HTMLVideoElement): HTMLElement {
   const button = document.createElement("button");
   button.innerText = "Screenshot";
@@ -152,6 +143,21 @@ function makeScreenshotButton(video: HTMLVideoElement): HTMLElement {
     const blob = await screenshotOfVideo(video);
     await clipboardWriteBlob(blob);
     showSnackbar("Screenshot copied!");
+  });
+  return button;
+}
+
+function makeURLAtCurrentButton(
+  videoId: string,
+  video: HTMLVideoElement
+): HTMLElement {
+  const button = document.createElement("button");
+  button.innerText = "URL@";
+  button.addEventListener("click", async () => {
+    const t = Math.round(currentTimeOfVideo(video));
+    const url = `https://youtu.be/${videoId}?t=${t}`;
+    await clipboardWriteText(url);
+    showSnackbar(`"${url}" copied`);
   });
   return button;
 }

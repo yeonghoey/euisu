@@ -1,9 +1,9 @@
 .euisu {
   float: right;
-  margin: 0 1em;
+  margin: 0 0.5em;
 }
 
-.euisu > button {
+.euisu > * {
   margin: 0.1em;
   padding: 0 0.1em;
   font-size: 0.8em;
