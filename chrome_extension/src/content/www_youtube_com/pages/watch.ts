@@ -86,17 +86,55 @@ function createEuisu(
 ): HTMLElement {
   const div = document.createElement("div");
   div.classList.add("euisu");
-  div.appendChild(makeTitleButton(title));
-  div.appendChild(makeURLButton(videoId));
-  div.appendChild(makeThumbnailButton(videoId));
+
+  // Buttons
+
+  const titleButton = makeTitleButton(title);
+  div.appendChild(titleButton);
+
+  const urlButton = makeURLButton(videoId);
+  div.appendChild(urlButton);
+
+  const thumbnailButton = makeThumbnailButton(videoId);
+  div.appendChild(thumbnailButton);
+
   div.appendChild(makeSpacer());
-  div.appendChild(makeScreenshotButton(video));
-  div.appendChild(makeURLAtCurrentButton(videoId, video));
+
+  const screenshotButton = makeScreenshotButton(video);
+  div.appendChild(screenshotButton);
+
+  const urlAtCurrentButton = makeURLAtCurrentButton(videoId, video);
+  div.appendChild(urlAtCurrentButton);
+
+  // Shortcuts
+  const shortcuts: Shortcuts = {
+    Digit1: titleButton,
+    Digit2: urlButton,
+    Digit3: thumbnailButton,
+    Digit4: screenshotButton,
+    Digit5: urlAtCurrentButton,
+  };
+
+  document.addEventListener(
+    "keydown",
+    (ev) => {
+      if (ev.code in shortcuts) {
+        shortcuts[ev.code].click();
+        console.log(`"${ev.code}" captured`);
+        ev.stopPropagation();
+      }
+    },
+    { capture: true }
+  );
 
   return div;
 }
 
-function makeTitleButton(title: HTMLElement): HTMLElement {
+interface Shortcuts {
+  [code: string]: HTMLButtonElement;
+}
+
+function makeTitleButton(title: HTMLElement): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "Title";
   button.addEventListener("click", async () => {
@@ -107,7 +145,7 @@ function makeTitleButton(title: HTMLElement): HTMLElement {
   return button;
 }
 
-function makeURLButton(videoId: string): HTMLElement {
+function makeURLButton(videoId: string): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "URL";
   button.addEventListener("click", async () => {
@@ -118,7 +156,7 @@ function makeURLButton(videoId: string): HTMLElement {
   return button;
 }
 
-function makeThumbnailButton(videoId: string): HTMLElement {
+function makeThumbnailButton(videoId: string): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "Thumbnail";
   button.addEventListener("click", async () => {
@@ -136,7 +174,7 @@ function makeSpacer(): HTMLElement {
   return spacer;
 }
 
-function makeScreenshotButton(video: HTMLVideoElement): HTMLElement {
+function makeScreenshotButton(video: HTMLVideoElement): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "Screenshot";
   button.addEventListener("click", async () => {
@@ -150,7 +188,7 @@ function makeScreenshotButton(video: HTMLVideoElement): HTMLElement {
 function makeURLAtCurrentButton(
   videoId: string,
   video: HTMLVideoElement
-): HTMLElement {
+): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "URL@";
   button.addEventListener("click", async () => {
