@@ -88,29 +88,29 @@ function createEuisu(
   div.classList.add("euisu");
 
   // Buttons
-  const screenshotButton = makeScreenshotButton(video);
-  div.appendChild(screenshotButton);
+  const titleButton = makeTitleButton(title);
+  div.appendChild(titleButton);
+
+  const urlButton = makeURLButton(videoId);
+  div.appendChild(urlButton);
 
   const urlAtCurrentButton = makeURLAtCurrentButton(videoId, video);
   div.appendChild(urlAtCurrentButton);
 
   div.appendChild(makeSpacer());
 
-  const urlButton = makeURLButton(videoId);
-  div.appendChild(urlButton);
-
-  const titleButton = makeTitleButton(title);
-  div.appendChild(titleButton);
+  const screenshotButton = makeScreenshotButton(video);
+  div.appendChild(screenshotButton);
 
   const thumbnailButton = makeThumbnailButton(videoId);
   div.appendChild(thumbnailButton);
 
   // Shortcuts
   const shortcuts: Shortcuts = {
-    Digit1: () => screenshotButton.click(),
-    Digit2: () => urlAtCurrentButton.click(),
-    Digit3: () => urlButton.click(),
-    Digit4: () => titleButton.click(),
+    Digit1: () => titleButton.click(),
+    Digit2: () => urlButton.click(),
+    Digit3: () => urlAtCurrentButton.click(),
+    Digit4: () => screenshotButton.click(),
     Digit5: () => thumbnailButton.click(),
     Backquote: () => addOrRemoveBookmark(videoId, video),
     BracketLeft: () => prevBookmark(videoId, video),
