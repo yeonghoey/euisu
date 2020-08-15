@@ -107,18 +107,21 @@ function createEuisu(
 
   // Shortcuts
   const shortcuts: Shortcuts = {
-    Digit1: screenshotButton,
-    Digit2: urlAtCurrentButton,
-    Digit3: urlButton,
-    Digit4: titleButton,
-    Digit5: thumbnailButton,
+    Digit1: screenshotButton.click,
+    Digit2: urlAtCurrentButton.click,
+    Digit3: urlButton.click,
+    Digit4: titleButton.click,
+    Digit5: thumbnailButton.click,
+    Backquote: () => addOrRemoveBookmark(videoId, video),
+    BracketLeft: () => prevBookmark(videoId, video),
+    BracketRight: () => nextBookmark(videoId, video),
   };
 
   document.addEventListener(
     "keydown",
     (ev) => {
       if (ev.code in shortcuts) {
-        shortcuts[ev.code].click();
+        shortcuts[ev.code]();
         console.log(`"${ev.code}" captured`);
         ev.stopPropagation();
       }
@@ -130,7 +133,7 @@ function createEuisu(
 }
 
 interface Shortcuts {
-  [code: string]: HTMLButtonElement;
+  [code: string]: () => void;
 }
 
 function makeTitleButton(title: HTMLElement): HTMLButtonElement {
@@ -197,6 +200,84 @@ function makeURLAtCurrentButton(
     showSnackbar(`"${url}" copied`);
   });
   return button;
+}
+
+const bookmarkEpsilon = 1;
+
+async function addOrRemoveBookmark(
+  videoId: string,
+  video: HTMLVideoElement
+): Promise<void> {
+  const currentTime = video.currentTime;
+  const bookmarks = await loadBookmarks(videoId);
+  const bookmarksExcludedMatchingCurrentTime = bookmarks.filter(
+    (timeStamp) => Math.abs(timeStamp - currentTime) > bookmarkEpsilon
+  );
+
+  if (bookmarksExcludedMatchingCurrentTime.length === bookmarks.length) {
+    bookmarks.push(currentTime);
+    bookmarks.sort((a, b) => a - b);
+    await saveBookmarks(videoId, bookmarks);
+    showSnackbar(`Mark added`);
+    console.log(`Euisu: After adding: ${bookmarks}`);
+  } else {
+    await saveBookmarks(videoId, bookmarksExcludedMatchingCurrentTime);
+    showSnackbar(`Mark removed`);
+    console.log(
+      `Euisu: After removing: ${bookmarksExcludedMatchingCurrentTime}`
+    );
+  }
+}
+
+async function prevBookmark(
+  videoId: string,
+  video: HTMLVideoElement
+): Promise<void> {
+  const currentTime = video.currentTime;
+  const bookmarks = await loadBookmarks(videoId);
+  const closestPrevTimestamp = bookmarks.reduce((a, x) => {
+    if (x + bookmarkEpsilon > currentTime) {
+      return a;
+    }
+    return x;
+  }, currentTime);
+  video.currentTime = closestPrevTimestamp;
+}
+
+async function nextBookmark(
+  videoId: string,
+  video: HTMLVideoElement
+): Promise<void> {
+  const currentTime = video.currentTime;
+  const bookmarks = await loadBookmarks(videoId);
+  const closestNextTimestamp = bookmarks.reduceRight((a, x) => {
+    if (x - bookmarkEpsilon < currentTime) {
+      return a;
+    }
+    return x;
+  }, currentTime);
+  video.currentTime = closestNextTimestamp;
+}
+
+async function saveBookmarks(
+  videoId: string,
+  bookmarks: number[]
+): Promise<void> {
+  return new Promise((resolve) => {
+    const key = `youtube-watch-bookmarks-${videoId}`;
+    chrome.storage.local.set({ [key]: bookmarks }, () => {
+      resolve();
+    });
+  });
+}
+
+async function loadBookmarks(videoId: string): Promise<number[]> {
+  return new Promise((resolve) => {
+    const key = `youtube-watch-bookmarks-${videoId}`;
+    chrome.storage.local.get({ [key]: [] }, (items) => {
+      resolve(items[key]);
+    });
+  });
 }
 
 // -------------------------------------------

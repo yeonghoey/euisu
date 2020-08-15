@@ -5,6 +5,7 @@
     "permissions": [
         "clipboardWrite",
         "contextMenus",
+        "storage",
         "tabs",
         "webNavigation",
         "<all_urls>"
