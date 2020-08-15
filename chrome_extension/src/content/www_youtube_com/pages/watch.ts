@@ -49,7 +49,7 @@ function injectEuisu(): boolean {
   }
 
   const euisu = createEuisu(videoId, title, video);
-  parent.appendChild(euisu);
+  parent.insertBefore(euisu, rightControls);
   return true;
 }
 
