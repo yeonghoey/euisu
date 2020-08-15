@@ -107,11 +107,11 @@ function createEuisu(
 
   // Shortcuts
   const shortcuts: Shortcuts = {
-    Digit1: screenshotButton.click,
-    Digit2: urlAtCurrentButton.click,
-    Digit3: urlButton.click,
-    Digit4: titleButton.click,
-    Digit5: thumbnailButton.click,
+    Digit1: () => screenshotButton.click(),
+    Digit2: () => urlAtCurrentButton.click(),
+    Digit3: () => urlButton.click(),
+    Digit4: () => titleButton.click(),
+    Digit5: () => thumbnailButton.click(),
     Backquote: () => addOrRemoveBookmark(videoId, video),
     BracketLeft: () => prevBookmark(videoId, video),
     BracketRight: () => nextBookmark(videoId, video),
