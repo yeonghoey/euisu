@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/yeonghoey/euisu/backend/anki"
+	"github.com/yeonghoey/euisu/backend/hew"
 	"github.com/yeonghoey/euisu/backend/server"
 )
 
@@ -14,9 +15,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to initialize Anki with %q", ankiMedia)
 	}
+
+	hew, err := hew.NewHew(hewCmdPath)
+	if err != nil {
+		log.Fatalf("Failed to locate hew command: %v", err)
+	}
+
 	s := &server.Server{
 		Addr: servAddr,
 		Anki: anki,
+		Hew:  hew,
 	}
 	s.Run()
 }
