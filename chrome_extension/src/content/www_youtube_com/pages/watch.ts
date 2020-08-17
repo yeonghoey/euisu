@@ -120,6 +120,14 @@ function createEuisu(
   document.addEventListener(
     "keydown",
     (ev) => {
+      // Skip when shortcuts used with modifiers
+      if (ev.ctrlKey || ev.altKey || ev.metaKey) {
+        return;
+      }
+      // Skip when typing in search bar
+      if (document.activeElement?.nodeName === "INPUT") {
+        return;
+      }
       if (ev.code in shortcuts) {
         shortcuts[ev.code]();
         console.log(`"${ev.code}" captured`);
