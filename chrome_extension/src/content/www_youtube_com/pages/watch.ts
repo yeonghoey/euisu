@@ -229,11 +229,9 @@ function makeHewButton(
     const t = Math.round(currentTimeOfVideo(video));
     const ytURL = `https://youtu.be/${videoId}?t=${t}`;
     const [ok, body] = await requestRunHew(ytURL);
-    if (ok) {
-      showSnackbar("Hew started");
-    } else {
+    if (!ok) {
       console.log(body);
-      showSnackbar("Failed to start hew. Check the console for details");
+      showSnackbar("Failed to start Hew");
     }
   });
   return button;
