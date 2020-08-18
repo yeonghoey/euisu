@@ -4,11 +4,13 @@ import {
   onContextMenuClicked,
 } from "src/background/contextmenus";
 import { handleCommands } from "src/background/commands";
+import { registerContentToBackgroundListener } from "src/background/content_to_background_listener";
 
 import { registerInjection } from "src/background/injection";
 
 // Messages
-chrome.runtime.onMessage.addListener(onMessage);
+chrome.runtime.onMessage.addListener(onMessage); // Legacy
+registerContentToBackgroundListener(); // New
 
 // Context menus
 chrome.runtime.onInstalled.addListener(createContextMenus);

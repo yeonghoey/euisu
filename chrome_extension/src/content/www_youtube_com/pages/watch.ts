@@ -3,6 +3,7 @@ import { showSnackbar } from "src/content/snackbar";
 import { screenshotOfVideo, currentTimeOfVideo } from "src/content/video";
 import { clipboardWriteText, clipboardWriteBlob } from "src/content/clipboard";
 import { urlParamGet } from "src/content/url";
+import { requestRunHew } from "src/content/request_to_background";
 
 function main(): void {
   const DELAY = 500;
@@ -105,6 +106,11 @@ function createEuisu(
   const thumbnailButton = makeThumbnailButton(videoId);
   div.appendChild(thumbnailButton);
 
+  div.appendChild(makeSpacer());
+
+  const hewButton = makeHewButton(videoId, video);
+  div.appendChild(hewButton);
+
   // Shortcuts
   const shortcuts: Shortcuts = {
     Digit1: () => titleButton.click(),
@@ -112,6 +118,7 @@ function createEuisu(
     Digit3: () => urlAtCurrentButton.click(),
     Digit4: () => screenshotButton.click(),
     Digit5: () => thumbnailButton.click(),
+    Digit0: () => hewButton.click(),
     Backquote: () => addOrRemoveBookmark(videoId, video),
     BracketLeft: () => prevBookmark(videoId, video),
     BracketRight: () => nextBookmark(videoId, video),
@@ -206,6 +213,28 @@ function makeURLAtCurrentButton(
     const url = `https://youtu.be/${videoId}?t=${t}`;
     await clipboardWriteText(url);
     showSnackbar(`"${url}" copied`);
+  });
+  return button;
+}
+
+function makeHewButton(
+  videoId: string,
+  video: HTMLVideoElement
+): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.innerText = "Hew";
+  button.addEventListener("click", async () => {
+    showSnackbar("Starting Hew...");
+    video.pause();
+    const t = Math.round(currentTimeOfVideo(video));
+    const ytURL = `https://youtu.be/${videoId}?t=${t}`;
+    const [ok, body] = await requestRunHew(ytURL);
+    if (ok) {
+      showSnackbar("Hew started");
+    } else {
+      console.log(body);
+      showSnackbar("Failed to start hew. Check the console for details");
+    }
   });
   return button;
 }
