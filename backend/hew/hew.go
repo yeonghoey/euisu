@@ -19,12 +19,12 @@ func NewHew(hewCmdPath string) (*Hew, error) {
 	var err error
 
 	if hewCmdPath != "" {
+		cmdPath = hewCmdPath
+	} else {
 		cmdPath, err = exec.LookPath("hew")
 		if err != nil {
 			return nil, fmt.Errorf("Failed to locate hew command: %w", err)
 		}
-	} else {
-		cmdPath = hewCmdPath
 	}
 
 	// Double check wheter targetPath exists
