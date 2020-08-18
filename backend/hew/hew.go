@@ -40,9 +40,13 @@ func NewHew(hewCmdPath string) (*Hew, error) {
 }
 
 // Run runs hew with specified ytURL
-func (hew *Hew) Run(ytURL string) ([]byte, error) {
+func (hew *Hew) Run(ytURL, bookmarks string) ([]byte, error) {
 	var cmd *exec.Cmd
-	cmd = exec.Command(hew.cmdPath, "--yt", ytURL)
+	if bookmarks == "" {
+		cmd = exec.Command(hew.cmdPath, "--yt", ytURL)
+	} else {
+		cmd = exec.Command(hew.cmdPath, "--yt", ytURL, "--bookmarks", bookmarks)
+	}
 
 	stderr, err := cmd.StderrPipe()
 	defer stderr.Close()
