@@ -103,6 +103,7 @@ function createEuisu(title: HTMLElement, video: HTMLVideoElement): HTMLElement {
     Backquote: () => addOrRemoveBookmark(video),
     BracketLeft: () => prevBookmark(video),
     BracketRight: () => nextBookmark(video),
+    Backslash: () => returnBeforeBookmark(video),
   };
 
   window.addEventListener(
@@ -232,7 +233,7 @@ function makeHewButton(video: HTMLVideoElement): HTMLButtonElement {
   return button;
 }
 
-const bookmarkEpsilon = 1;
+const bookmarkEpsilon = 2;
 
 async function addOrRemoveBookmark(video: HTMLVideoElement): Promise<void> {
   const videoId = retrieveVideoId();
@@ -275,6 +276,10 @@ async function prevBookmark(video: HTMLVideoElement): Promise<void> {
     }
     return x;
   }, currentTime);
+  if (bookmarks.every((x) => Math.abs(x - currentTime) > bookmarkEpsilon)) {
+    video.dataset.euisuVideoId = videoId
+    video.dataset.euisuBeforeBookmark = currentTime.toString();
+  }
   video.currentTime = closestPrevTimestamp;
 }
 
@@ -292,7 +297,26 @@ async function nextBookmark(video: HTMLVideoElement): Promise<void> {
     }
     return x;
   }, currentTime);
+  if (bookmarks.every((x) => Math.abs(x - currentTime) > bookmarkEpsilon)) {
+    video.dataset.euisuVideoId = videoId
+    video.dataset.euisuBeforeBookmark = currentTime.toString();
+  }
   video.currentTime = closestNextTimestamp;
+}
+
+async function returnBeforeBookmark(video: HTMLVideoElement): Promise<void> {
+  const videoId = retrieveVideoId();
+  if (videoId === null) {
+    showSnackbar("Failed to retrieve video id");
+    return;
+  }
+  if (video.dataset.euisuVideoId !== videoId) {
+    return;
+  }
+  if (video.dataset.euisuBeforeBookmark === undefined) {
+    return;
+  }
+  video.currentTime = parseFloat(video.dataset.euisuBeforeBookmark)
 }
 
 async function saveBookmarks(
