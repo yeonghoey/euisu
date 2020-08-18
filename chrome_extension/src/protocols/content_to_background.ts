@@ -1,6 +1,7 @@
 export interface RequestRunHew {
   type: "RequestRunHew";
   ytURL: string;
+  bookmarks: number[];
 }
 
 export interface ResponseRunHew {

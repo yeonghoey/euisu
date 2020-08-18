@@ -5,16 +5,26 @@ export function registerContentToBackgroundListener(): void {
     const request = message as Request;
     switch (request.type) {
       case "RequestRunHew":
-        requestRunHew(request.ytURL).then(sendResponse);
+        requestRunHew(request.ytURL, request.bookmarks).then(sendResponse);
         return true;
     }
   });
 }
 
-async function requestRunHew(ytURL: string): Promise<ResponseRunHew> {
-  const url = new URL("http://localhost:8732/hew");
-  url.searchParams.append("yturl", ytURL);
-  const response = await fetch(url.href);
+async function requestRunHew(
+  ytURL: string,
+  bookmarks: number[]
+): Promise<ResponseRunHew> {
+  const response = await fetch("http://localhost:8732/hew", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      ytURL,
+      bookmarks,
+    }),
+  });
   return {
     type: "ResponseRunHew",
     ok: response.ok,

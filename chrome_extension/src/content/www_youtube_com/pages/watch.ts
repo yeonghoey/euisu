@@ -228,7 +228,8 @@ function makeHewButton(
     video.pause();
     const t = Math.round(currentTimeOfVideo(video));
     const ytURL = `https://youtu.be/${videoId}?t=${t}`;
-    const [ok, body] = await requestRunHew(ytURL);
+    const bookmarks = await loadBookmarks(videoId);
+    const [ok, body] = await requestRunHew(ytURL, bookmarks);
     if (!ok) {
       console.log(body);
       showSnackbar("Failed to start Hew");
