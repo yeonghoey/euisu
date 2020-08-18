@@ -2,7 +2,6 @@ package hew
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"time"
@@ -59,11 +58,25 @@ func (hew *Hew) Run(ytURL, bookmarks string) ([]byte, error) {
 		return nil, fmt.Errorf("Failed to start hew: %w", err)
 	}
 
-	// Hew will download the target video, which may take long, or may fail.
-	// Wait for a short period of time so that this give an instant feedback
-	// when it failed.
-	time.Sleep(2 * time.Second)
+	stderrContents := make(chan []byte)
+	go func() {
+		buf := make([]byte, 4096)
+		n, _ := stderr.Read(buf)
+		if n > 0 {
+			stderrContents <- buf[:n]
+		}
+		close(stderrContents)
+	}()
 
-	stderrContents, _ := ioutil.ReadAll(stderr)
-	return stderrContents, nil
+	// Hew will download the target video, which may take long, or may fail.
+	// Wait for a few seconds so that this give an instant feedback
+	// when it failed. By the way, this is okay because even though
+	// the request is being hung, the actual desire work, running Hew,
+	// won't be stuck.
+	select {
+	case x := <-stderrContents:
+		return x, nil
+	case <-time.After(10 * time.Second):
+		return []byte{}, nil
+	}
 }
