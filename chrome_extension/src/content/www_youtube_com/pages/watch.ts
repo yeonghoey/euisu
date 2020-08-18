@@ -7,13 +7,6 @@ import { requestRunHew } from "src/content/request_to_background";
 
 function main(): void {
   const DELAY = 500;
-
-  // NOTE: YouTube reuses the same DOM elements and because of the fact,
-  // buttons will keep the first loaded contexts.
-  // To make sure for buttons to have current context,
-  // remove the pre-existing euisu at load time.
-  clearEuisu();
-
   setTimeout(function tryInjectEuisu(): void {
     const success = injectEuisu();
     if (!success) {
@@ -52,10 +45,6 @@ function injectEuisu(): boolean {
   const euisu = createEuisu(videoId, title, video);
   parent.insertBefore(euisu, rightControls);
   return true;
-}
-
-function clearEuisu(): void {
-  document.querySelector(".euisu")?.remove();
 }
 
 function isAlreadyInjected(): boolean {
@@ -124,25 +113,32 @@ function createEuisu(
     BracketRight: () => nextBookmark(videoId, video),
   };
 
-  document.addEventListener(
-    "keydown",
-    (ev) => {
-      // Skip when shortcuts used with modifiers
-      if (ev.ctrlKey || ev.altKey || ev.metaKey) {
-        return;
-      }
-      // Skip when typing in search bar
-      if (document.activeElement?.nodeName === "INPUT") {
-        return;
-      }
-      if (ev.code in shortcuts) {
-        shortcuts[ev.code]();
-        console.log(`"${ev.code}" captured`);
-        ev.stopPropagation();
-      }
-    },
-    { capture: true }
-  );
+  function onKeydown(ev: KeyboardEvent): void {
+    // Skip when shortcuts used with modifiers
+    if (ev.ctrlKey || ev.altKey || ev.metaKey) {
+      return;
+    }
+    // Skip when typing in search bar
+    if (document.activeElement?.nodeName === "INPUT") {
+      return;
+    }
+    if (ev.code in shortcuts) {
+      shortcuts[ev.code]();
+      console.log(`"${ev.code}" captured`);
+      ev.stopPropagation();
+    }
+  }
+
+  window.addEventListener("keydown", onKeydown, { capture: true });
+
+  // NOTE: YouTube reuses the same DOM elements and because of the fact,
+  // buttons will keep the first loaded contexts.
+  // To make sure for buttons to have current context,
+  // remove the pre-existing euisu at load time.
+  window.addEventListener("popstate", () => {
+    window.removeEventListener("keydown", onKeydown, { capture: true });
+    div.remove();
+  });
 
   return div;
 }
