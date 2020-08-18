@@ -20,10 +20,6 @@ function injectEuisu(): boolean {
     return true;
   }
 
-  const videoId = retrieveVideoId();
-  if (videoId === null) {
-    return false;
-  }
   const title = retrieveTitle();
   if (title === null) {
     return false;
@@ -42,7 +38,7 @@ function injectEuisu(): boolean {
     return false;
   }
 
-  const euisu = createEuisu(videoId, title, video);
+  const euisu = createEuisu(title, video);
   parent.insertBefore(euisu, rightControls);
   return true;
 }
@@ -69,11 +65,7 @@ function retrieveRightControls(): HTMLElement | null {
   return document.querySelector<HTMLElement>(".ytp-right-controls");
 }
 
-function createEuisu(
-  videoId: string,
-  title: HTMLElement,
-  video: HTMLVideoElement
-): HTMLElement {
+function createEuisu(title: HTMLElement, video: HTMLVideoElement): HTMLElement {
   const div = document.createElement("div");
   div.classList.add("euisu");
 
@@ -81,10 +73,10 @@ function createEuisu(
   const titleButton = makeTitleButton(title);
   div.appendChild(titleButton);
 
-  const urlButton = makeURLButton(videoId);
+  const urlButton = makeURLButton();
   div.appendChild(urlButton);
 
-  const urlAtCurrentButton = makeURLAtCurrentButton(videoId, video);
+  const urlAtCurrentButton = makeURLAtCurrentButton(video);
   div.appendChild(urlAtCurrentButton);
 
   div.appendChild(makeSpacer());
@@ -92,12 +84,12 @@ function createEuisu(
   const screenshotButton = makeScreenshotButton(video);
   div.appendChild(screenshotButton);
 
-  const thumbnailButton = makeThumbnailButton(videoId);
+  const thumbnailButton = makeThumbnailButton();
   div.appendChild(thumbnailButton);
 
   div.appendChild(makeSpacer());
 
-  const hewButton = makeHewButton(videoId, video);
+  const hewButton = makeHewButton(video);
   div.appendChild(hewButton);
 
   // Shortcuts
@@ -108,38 +100,30 @@ function createEuisu(
     Digit4: () => screenshotButton.click(),
     Digit5: () => thumbnailButton.click(),
     Digit0: () => hewButton.click(),
-    Backquote: () => addOrRemoveBookmark(videoId, video),
-    BracketLeft: () => prevBookmark(videoId, video),
-    BracketRight: () => nextBookmark(videoId, video),
+    Backquote: () => addOrRemoveBookmark(video),
+    BracketLeft: () => prevBookmark(video),
+    BracketRight: () => nextBookmark(video),
   };
 
-  function onKeydown(ev: KeyboardEvent): void {
-    // Skip when shortcuts used with modifiers
-    if (ev.ctrlKey || ev.altKey || ev.metaKey) {
-      return;
-    }
-    // Skip when typing in search bar
-    if (document.activeElement?.nodeName === "INPUT") {
-      return;
-    }
-    if (ev.code in shortcuts) {
-      shortcuts[ev.code]();
-      console.log(`"${ev.code}" captured`);
-      ev.stopPropagation();
-    }
-  }
-
-  window.addEventListener("keydown", onKeydown, { capture: true });
-
-  // NOTE: YouTube reuses the same DOM elements and because of the fact,
-  // buttons will keep the first loaded contexts.
-  // To make sure for buttons to have current context,
-  // remove the pre-existing euisu at load time.
-  window.addEventListener("popstate", () => {
-    window.removeEventListener("keydown", onKeydown, { capture: true });
-    div.remove();
-  });
-
+  window.addEventListener(
+    "keydown",
+    (ev) => {
+      // Skip when shortcuts used with modifiers
+      if (ev.ctrlKey || ev.altKey || ev.metaKey) {
+        return;
+      }
+      // Skip when typing in search bar
+      if (document.activeElement?.nodeName === "INPUT") {
+        return;
+      }
+      if (ev.code in shortcuts) {
+        shortcuts[ev.code]();
+        console.log(`"${ev.code}" captured`);
+        ev.stopPropagation();
+      }
+    },
+    { capture: true }
+  );
   return div;
 }
 
@@ -158,10 +142,15 @@ function makeTitleButton(title: HTMLElement): HTMLButtonElement {
   return button;
 }
 
-function makeURLButton(videoId: string): HTMLButtonElement {
+function makeURLButton(): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "URL";
   button.addEventListener("click", async () => {
+    const videoId = retrieveVideoId();
+    if (videoId === null) {
+      showSnackbar("Failed to retrieve video id");
+      return;
+    }
     const url = `https://youtu.be/${videoId}`;
     await clipboardWriteText(url);
     showSnackbar(`"${url}" copied`);
@@ -169,10 +158,15 @@ function makeURLButton(videoId: string): HTMLButtonElement {
   return button;
 }
 
-function makeThumbnailButton(videoId: string): HTMLButtonElement {
+function makeThumbnailButton(): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "Thumbnail";
   button.addEventListener("click", async () => {
+    const videoId = retrieveVideoId();
+    if (videoId === null) {
+      showSnackbar("Failed to retrieve video id");
+      return;
+    }
     const url = `http://localhost:8732/youtube/thumbnail?v=${videoId}`;
     const response = await fetch(url);
     const blob = await response.blob();
@@ -198,13 +192,15 @@ function makeScreenshotButton(video: HTMLVideoElement): HTMLButtonElement {
   return button;
 }
 
-function makeURLAtCurrentButton(
-  videoId: string,
-  video: HTMLVideoElement
-): HTMLButtonElement {
+function makeURLAtCurrentButton(video: HTMLVideoElement): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "URL@";
   button.addEventListener("click", async () => {
+    const videoId = retrieveVideoId();
+    if (videoId === null) {
+      showSnackbar("Failed to retrieve video id");
+      return;
+    }
     const t = Math.round(currentTimeOfVideo(video));
     const url = `https://youtu.be/${videoId}?t=${t}`;
     await clipboardWriteText(url);
@@ -213,13 +209,15 @@ function makeURLAtCurrentButton(
   return button;
 }
 
-function makeHewButton(
-  videoId: string,
-  video: HTMLVideoElement
-): HTMLButtonElement {
+function makeHewButton(video: HTMLVideoElement): HTMLButtonElement {
   const button = document.createElement("button");
   button.innerText = "Hew";
   button.addEventListener("click", async () => {
+    const videoId = retrieveVideoId();
+    if (videoId === null) {
+      showSnackbar("Failed to retrieve video id");
+      return;
+    }
     showSnackbar("Starting Hew...");
     video.pause();
     const t = Math.round(currentTimeOfVideo(video));
@@ -236,12 +234,14 @@ function makeHewButton(
 
 const bookmarkEpsilon = 1;
 
-async function addOrRemoveBookmark(
-  videoId: string,
-  video: HTMLVideoElement
-): Promise<void> {
-  const currentTime = video.currentTime;
+async function addOrRemoveBookmark(video: HTMLVideoElement): Promise<void> {
+  const videoId = retrieveVideoId();
+  if (videoId === null) {
+    showSnackbar("Failed to retrieve video id");
+    return;
+  }
   const bookmarks = await loadBookmarks(videoId);
+  const currentTime = video.currentTime;
   const bookmarksExcludedMatchingCurrentTime = bookmarks.filter(
     (timeStamp) => Math.abs(timeStamp - currentTime) > bookmarkEpsilon
   );
@@ -261,12 +261,14 @@ async function addOrRemoveBookmark(
   }
 }
 
-async function prevBookmark(
-  videoId: string,
-  video: HTMLVideoElement
-): Promise<void> {
-  const currentTime = video.currentTime;
+async function prevBookmark(video: HTMLVideoElement): Promise<void> {
+  const videoId = retrieveVideoId();
+  if (videoId === null) {
+    showSnackbar("Failed to retrieve video id");
+    return;
+  }
   const bookmarks = await loadBookmarks(videoId);
+  const currentTime = video.currentTime;
   const closestPrevTimestamp = bookmarks.reduce((a, x) => {
     if (x + bookmarkEpsilon > currentTime) {
       return a;
@@ -276,12 +278,14 @@ async function prevBookmark(
   video.currentTime = closestPrevTimestamp;
 }
 
-async function nextBookmark(
-  videoId: string,
-  video: HTMLVideoElement
-): Promise<void> {
-  const currentTime = video.currentTime;
+async function nextBookmark(video: HTMLVideoElement): Promise<void> {
+  const videoId = retrieveVideoId();
+  if (videoId === null) {
+    showSnackbar("Failed to retrieve video id");
+    return;
+  }
   const bookmarks = await loadBookmarks(videoId);
+  const currentTime = video.currentTime;
   const closestNextTimestamp = bookmarks.reduceRight((a, x) => {
     if (x - bookmarkEpsilon < currentTime) {
       return a;
