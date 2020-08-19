@@ -224,9 +224,10 @@ function makeHewButton(video: HTMLVideoElement): HTMLButtonElement {
     const t = Math.round(currentTimeOfVideo(video));
     const ytURL = `https://youtu.be/${videoId}?t=${t}`;
     const bookmarks = await loadBookmarks(videoId);
+    // NOTE: Handler will be blocked until hew finishes.
     const [ok, body] = await requestRunHew(ytURL, bookmarks);
+    console.log(body);
     if (!ok) {
-      console.log(body);
       showSnackbar("Failed to start Hew");
     }
   });
@@ -277,7 +278,7 @@ async function prevBookmark(video: HTMLVideoElement): Promise<void> {
     return x;
   }, currentTime);
   if (bookmarks.every((x) => Math.abs(x - currentTime) > bookmarkEpsilon)) {
-    video.dataset.euisuVideoId = videoId
+    video.dataset.euisuVideoId = videoId;
     video.dataset.euisuBeforeBookmark = currentTime.toString();
   }
   video.currentTime = closestPrevTimestamp;
@@ -298,7 +299,7 @@ async function nextBookmark(video: HTMLVideoElement): Promise<void> {
     return x;
   }, currentTime);
   if (bookmarks.every((x) => Math.abs(x - currentTime) > bookmarkEpsilon)) {
-    video.dataset.euisuVideoId = videoId
+    video.dataset.euisuVideoId = videoId;
     video.dataset.euisuBeforeBookmark = currentTime.toString();
   }
   video.currentTime = closestNextTimestamp;
@@ -316,7 +317,7 @@ async function returnBeforeBookmark(video: HTMLVideoElement): Promise<void> {
   if (video.dataset.euisuBeforeBookmark === undefined) {
     return;
   }
-  video.currentTime = parseFloat(video.dataset.euisuBeforeBookmark)
+  video.currentTime = parseFloat(video.dataset.euisuBeforeBookmark);
 }
 
 async function saveBookmarks(
