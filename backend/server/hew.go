@@ -33,10 +33,7 @@ func newHewHandler(hew *hew.Hew) http.Handler {
 			http.Error(w, fmt.Sprintf("Failed to run hew: %v", err), http.StatusInternalServerError)
 			return
 		}
-		if len(output) > 0 {
-			http.Error(w, fmt.Sprintf("Failed to run hew: %v", string(output)), http.StatusInternalServerError)
-			return
-		}
+		w.Write(output)
 	})
 }
 
