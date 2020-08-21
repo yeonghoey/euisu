@@ -72,7 +72,7 @@ func (hew *Hew) RunSrc(filename, srcURL string) ([]byte, error) {
 func download(filepath, srcURL string) error {
 	// Skip if the file exists
 	_, err := os.Stat(filepath)
-	if os.IsExist(err) {
+	if err == nil {
 		return nil
 	}
 

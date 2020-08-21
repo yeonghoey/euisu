@@ -57,16 +57,32 @@ function isAlreadyInjected(): boolean {
   return document.querySelector(".euisu") !== null;
 }
 
-function retrieveCourseTitle(): HTMLElement | null {
-  return document.querySelector<HTMLElement>(
+function retrieveCourseTitle(): string | null {
+  const a = document.querySelector<HTMLElement>(
     "a[data-purpose='course-header-title']"
   );
+  if (a !== null) {
+    return a.innerText;
+  }
+  return null;
 }
 
-function retrieveLectureTitle(): HTMLElement | null {
-  return document.querySelector<HTMLElement>(
+function retrieveLectureTitle(): string | null {
+  const fromSection = document.querySelector<HTMLElement>(
+    "div[data-purpose='curriculum-section-container'] li[aria-current='true'] div[class^='curriculum-item-link--title']"
+  );
+
+  if (fromSection !== null) {
+    return fromSection.innerText;
+  }
+
+  const overlay = document.querySelector<HTMLElement>(
     "div[class^='video-viewer--title-overlay']"
   );
+  if (overlay !== null) {
+    return overlay.innerText;
+  }
+  return null;
 }
 
 function retrieveVideo(): HTMLVideoElement | null {
@@ -134,7 +150,7 @@ function makeHewButton(): HTMLButtonElement {
       return;
     }
 
-    const filename = `${courseTitle?.innerText}-${lectureTitle?.innerText}.mp4`;
+    const filename = `${courseTitle} - ${lectureTitle}.mp4`;
 
     showSnackbar("Starting Hew...");
     video.pause();
