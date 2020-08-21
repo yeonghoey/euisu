@@ -21,3 +21,8 @@ registerInjection({
   target: ".*://www.youtube.com/watch.*",
   file: "www_youtube_com_watch.js",
 });
+
+registerInjection({
+  target: ".*://www.udemy.com/course/.*",
+  file: "www_udemy_com_course.js",
+});

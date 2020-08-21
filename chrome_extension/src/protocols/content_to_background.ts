@@ -10,5 +10,21 @@ export interface ResponseRunHew {
   body: string;
 }
 
-export type Request = RequestRunHew;
-export type Response = ResponseRunHew;
+// ----
+
+export interface RequestRunHewOnSrc {
+  type: "RequestRunHewOnSrc";
+  filename: string;
+  srcURL: string;
+}
+
+export interface ResponseRunHewOnSrc {
+  type: "ResponseRunHewOnSrc";
+  ok: boolean;
+  body: string;
+}
+
+// ----
+
+export type Request = RequestRunHew | RequestRunHewOnSrc;
+export type Response = ResponseRunHew | ResponseRunHewOnSrc;

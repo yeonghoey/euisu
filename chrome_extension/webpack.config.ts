@@ -12,6 +12,7 @@ const config: webpack.Configuration = {
       "./src/content/all_urls/background_to_content_listener.ts",
     en_dict_naver_com: "./src/content/en_dict_naver_com/en_dict_naver_com.ts",
     www_youtube_com_watch: "./src/content/www_youtube_com/pages/watch.ts",
+    www_udemy_com_course: "./src/content/www_udemy_com/pages/course.ts",
   },
   module: {
     rules: [

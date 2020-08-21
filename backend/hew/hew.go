@@ -2,8 +2,11 @@ package hew
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"os/exec"
+	"path"
 )
 
 // Hew is for executuing hew directly from chrome_extension.
@@ -48,4 +51,46 @@ func (hew *Hew) Run(ytURL, bookmarks string) ([]byte, error) {
 
 	// Just let the handler hang until Hew finishes.
 	return cmd.CombinedOutput()
+}
+
+// RunSrc runs hew with specified ytURL
+func (hew *Hew) RunSrc(filename, srcURL string) ([]byte, error) {
+	filepath := path.Join(os.Getenv("HOME"), "Downloads", filename)
+
+	err := download(filepath, srcURL)
+	if err != nil {
+		return nil, err
+	}
+
+	var cmd *exec.Cmd
+	cmd = exec.Command(hew.cmdPath, filepath)
+
+	// Just let the handler hang until Hew finishes.
+	return cmd.CombinedOutput()
+}
+
+func download(filepath, srcURL string) error {
+	// Skip if the file exists
+	_, err := os.Stat(filepath)
+	if os.IsExist(err) {
+		return nil
+	}
+
+	// Get the data
+	resp, err := http.Get(srcURL)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
