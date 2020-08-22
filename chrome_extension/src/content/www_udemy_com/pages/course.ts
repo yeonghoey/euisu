@@ -196,7 +196,10 @@ function makeHewButton(): HTMLButtonElement {
       return;
     }
 
-    const filename = `${courseTitle} - ${lectureTitle}.mp4`;
+    const filename = `${courseTitle} - ${lectureTitle}.mp4`.replace(
+      /[\\/:*?"<>|]/g,
+      "_"
+    );
 
     showSnackbar("Starting Hew...");
     video.pause();
