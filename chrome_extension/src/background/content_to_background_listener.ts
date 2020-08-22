@@ -1,6 +1,7 @@
 import {
   Request,
   ResponseRunHew,
+  RequestRunHewOnSrc,
   ResponseRunHewOnSrc,
 } from "src/protocols/content_to_background";
 
@@ -12,7 +13,7 @@ export function registerContentToBackgroundListener(): void {
         requestRunHew(request.ytURL, request.bookmarks).then(sendResponse);
         return true;
       case "RequestRunHewOnSrc":
-        requestRunHewOnSrc(request.filename, request.srcURL).then(sendResponse);
+        requestRunHewOnSrc(request).then(sendResponse);
         return true;
     }
   });
@@ -40,8 +41,7 @@ async function requestRunHew(
 }
 
 async function requestRunHewOnSrc(
-  filename: string,
-  srcURL: string
+  r: RequestRunHewOnSrc
 ): Promise<ResponseRunHewOnSrc> {
   const response = await fetch("http://localhost:8732/hew/src", {
     method: "POST",
@@ -49,8 +49,10 @@ async function requestRunHewOnSrc(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      filename,
-      srcURL,
+      filename: r.filename,
+      srcURL: r.srcURL,
+      startAt: r.startAt,
+      bookmarks: r.bookmarks,
     }),
   });
   return {

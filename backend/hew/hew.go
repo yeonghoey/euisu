@@ -54,7 +54,7 @@ func (hew *Hew) Run(ytURL, bookmarks string) ([]byte, error) {
 }
 
 // RunSrc runs hew with specified ytURL
-func (hew *Hew) RunSrc(filename, srcURL string) ([]byte, error) {
+func (hew *Hew) RunSrc(filename, srcURL, startAt, bookmarks string) ([]byte, error) {
 	filepath := path.Join(os.Getenv("HOME"), "Downloads", filename)
 
 	err := download(filepath, srcURL)
@@ -63,7 +63,7 @@ func (hew *Hew) RunSrc(filename, srcURL string) ([]byte, error) {
 	}
 
 	var cmd *exec.Cmd
-	cmd = exec.Command(hew.cmdPath, filepath)
+	cmd = exec.Command(hew.cmdPath, "--bookmarks", bookmarks, filepath, startAt)
 
 	// Just let the handler hang until Hew finishes.
 	return cmd.CombinedOutput()

@@ -17,12 +17,16 @@ export async function requestRunHew(
 
 export async function requestRunHewOnSrc(
   filename: string,
-  srcURL: string
+  srcURL: string,
+  startAt: number,
+  bookmarks: number[]
 ): Promise<[boolean, string]> {
   const response = await requestToBackground({
     type: "RequestRunHewOnSrc",
     filename,
     srcURL,
+    startAt,
+    bookmarks,
   } as ctb.RequestRunHewOnSrc);
   if (response.type === "ResponseRunHewOnSrc") {
     return [response.ok, response.body];

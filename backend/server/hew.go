@@ -83,13 +83,13 @@ func newHewSrcHandler(hew *hew.Hew) http.Handler {
 			return
 		}
 
-		filename, srcURL, err := parseHewSrcRequestBody(r.Body)
+		filename, srcURL, startAt, bookmarks, err := parseHewSrcRequestBody(r.Body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		output, err := hew.RunSrc(filename, srcURL)
+		output, err := hew.RunSrc(filename, srcURL, startAt, bookmarks)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to run hew: %v", err), http.StatusInternalServerError)
 			return
@@ -98,7 +98,7 @@ func newHewSrcHandler(hew *hew.Hew) http.Handler {
 	})
 }
 
-func parseHewSrcRequestBody(body io.Reader) (filename, srcURL string, err error) {
+func parseHewSrcRequestBody(body io.Reader) (filename, srcURL, startAt, bookmarks string, err error) {
 	dec := json.NewDecoder(body)
 
 	var data map[string]interface{}
@@ -117,6 +117,21 @@ func parseHewSrcRequestBody(body io.Reader) (filename, srcURL string, err error)
 	if !ok {
 		err = fmt.Errorf("\"srcURL\" is required")
 		return
+	}
+
+	startAtRaw, ok := data["startAt"].(float64)
+	if ok {
+		startAt = fmt.Sprintf("%.f", startAtRaw)
+	}
+
+	bookmarksRaw, ok := data["bookmarks"].([]interface{})
+	if ok {
+		bookmarksStr := make([]string, len(bookmarksRaw))
+		for i, sec := range bookmarksRaw {
+			// Use Only decimals
+			bookmarksStr[i] = fmt.Sprintf("%.f", sec)
+		}
+		bookmarks = strings.Join(bookmarksStr, ",")
 	}
 
 	return

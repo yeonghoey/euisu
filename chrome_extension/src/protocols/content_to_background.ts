@@ -16,6 +16,8 @@ export interface RequestRunHewOnSrc {
   type: "RequestRunHewOnSrc";
   filename: string;
   srcURL: string;
+  startAt: number;
+  bookmarks: number[];
 }
 
 export interface ResponseRunHewOnSrc {

@@ -5,6 +5,7 @@ import {
   prevBookmark,
   nextBookmark,
   returnBeforeBookmark,
+  loadBookmarks,
 } from "src/content/bookmarks";
 import { requestRunHewOnSrc } from "src/content/request_to_background";
 
@@ -141,26 +142,37 @@ function createEuisu(): HTMLElement {
     },
   };
 
-  window.addEventListener(
-    "keydown",
-    (ev) => {
-      // Skip when shortcuts used with modifiers
-      if (ev.ctrlKey || ev.altKey || ev.metaKey) {
-        return;
-      }
-      // Skip when typing in search bar
-      if (document.activeElement?.nodeName === "INPUT") {
-        return;
-      }
-      if (ev.code in shortcuts) {
-        shortcuts[ev.code]();
-        console.log(`"${ev.code}" captured`);
-        ev.stopPropagation();
-      }
-    },
-    { capture: true }
-  );
+  if (window.euisuKeydownListener !== undefined) {
+    window.removeEventListener("keydown", window.euisuKeydownListener, {
+      capture: true,
+    });
+  }
+
+  window.euisuKeydownListener = (ev: KeyboardEvent) => {
+    // Skip when shortcuts used with modifiers
+    if (ev.ctrlKey || ev.altKey || ev.metaKey) {
+      return;
+    }
+    // Skip when typing in search bar
+    if (document.activeElement?.nodeName === "INPUT") {
+      return;
+    }
+    if (ev.code in shortcuts) {
+      shortcuts[ev.code]();
+      console.log(`"${ev.code}" captured`);
+      ev.stopPropagation();
+    }
+  };
+  window.addEventListener("keydown", window.euisuKeydownListener, {
+    capture: true,
+  });
   return div;
+}
+
+declare global {
+  interface Window {
+    euisuKeydownListener?: (ev: KeyboardEvent) => void;
+  }
 }
 
 interface Shortcuts {
@@ -188,7 +200,13 @@ function makeHewButton(): HTMLButtonElement {
 
     showSnackbar("Starting Hew...");
     video.pause();
-    const [ok, body] = await requestRunHewOnSrc(filename, video.currentSrc);
+    const bookmarks = await loadBookmarks(storageKey());
+    const [ok, body] = await requestRunHewOnSrc(
+      filename,
+      video.currentSrc,
+      video.currentTime,
+      bookmarks
+    );
     console.log(body);
     if (!ok) {
       showSnackbar("Failed to start Hew");
