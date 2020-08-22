@@ -1,5 +1,11 @@
 import "src/content/www_youtube_com/pages/watch.css";
 import { showSnackbar } from "src/content/snackbar";
+import {
+  addOrRemoveBookmark,
+  prevBookmark,
+  nextBookmark,
+  returnBeforeBookmark,
+} from "src/content/bookmarks";
 import { requestRunHewOnSrc } from "src/content/request_to_background";
 
 function main(): void {
@@ -105,6 +111,34 @@ function createEuisu(): HTMLElement {
   // Shortcuts
   const shortcuts: Shortcuts = {
     Digit0: () => hewButton.click(),
+    Backquote: () => {
+      const video = retrieveVideo();
+      if (video === null) {
+        return;
+      }
+      addOrRemoveBookmark(storageKey(), video);
+    },
+    BracketLeft: () => {
+      const video = retrieveVideo();
+      if (video === null) {
+        return;
+      }
+      prevBookmark(storageKey(), video);
+    },
+    BracketRight: () => {
+      const video = retrieveVideo();
+      if (video === null) {
+        return;
+      }
+      nextBookmark(storageKey(), video);
+    },
+    Backslash: () => {
+      const video = retrieveVideo();
+      if (video === null) {
+        return;
+      }
+      returnBeforeBookmark(storageKey(), video);
+    },
   };
 
   window.addEventListener(
@@ -161,6 +195,18 @@ function makeHewButton(): HTMLButtonElement {
     }
   });
   return button;
+}
+
+function storageKey(): string {
+  const match = /course\/([^/]+)\/learn\/lecture\/(\d+)/.exec(
+    window.location.pathname
+  );
+  if (match === null) {
+    throw new Error("Failed to parse URL for composing storageKey");
+  }
+  const courseId = match[1];
+  const lectureNumber = match[2];
+  return `udemy-bookmarks-${courseId}-${lectureNumber}`;
 }
 
 // -------------------------------------------
