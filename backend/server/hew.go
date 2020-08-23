@@ -37,7 +37,7 @@ func newHewYTHandler(hew *hew.Hew) http.Handler {
 
 		output, err := hew.Run(ytURL, bookmarks)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to run hew: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to run hew: %v\n\n%s", err, output), http.StatusInternalServerError)
 			return
 		}
 		w.Write(output)
@@ -91,7 +91,7 @@ func newHewSrcHandler(hew *hew.Hew) http.Handler {
 
 		output, err := hew.RunSrc(filename, srcURL, startAt, bookmarks)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to run hew: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Failed to run hew: %v\n\n%s", err, output), http.StatusInternalServerError)
 			return
 		}
 		w.Write(output)
