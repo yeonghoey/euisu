@@ -9,6 +9,8 @@ export function createEuisu(
   div.classList.add("euisu");
   const scrapButoon = makeScrapButton(targetText, audioURL, meaning);
   div.appendChild(scrapButoon);
+  const vocaButoon = makeVocaButton(targetText);
+  div.appendChild(vocaButoon);
   const imageButton = makeImageButton(targetText);
   div.appendChild(imageButton);
   return div;
@@ -37,6 +39,15 @@ function makeScrapButton(
       const content = meaning === null ? head : `${head}\n${meaning}`;
       navigator.clipboard.writeText(content);
     });
+  };
+  return button;
+}
+
+function makeVocaButton(targetText: string) {
+  const button = document.createElement("button");
+  button.innerText = "Voca";
+  button.onclick = function onclick() {
+    requestCreateTab(`https://www.vocabulary.com/dictionary/${targetText}`);
   };
   return button;
 }
