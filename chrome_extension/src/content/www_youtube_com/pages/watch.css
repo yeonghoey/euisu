@@ -10,6 +10,12 @@
   vertical-align: middle;
 }
 
+.euisu > button {
+  color: lightgray;
+  background-color: transparent;
+  border: none;
+}
+
 .euisu-block {
   display: block;
   margin: 0;
