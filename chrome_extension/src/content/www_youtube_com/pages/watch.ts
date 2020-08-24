@@ -98,6 +98,7 @@ function createEuisu(title: HTMLElement, video: HTMLVideoElement): HTMLElement {
     Digit2: () => urlButton.click(),
     Digit3: () => urlAtCurrentButton.click(),
     Digit4: () => screenshotButton.click(),
+    KeyY: () => screenshotButton.click(),
     Digit5: () => thumbnailButton.click(),
     Digit0: () => hewButton.click(),
     Backquote: () => addOrRemoveBookmark(video),
