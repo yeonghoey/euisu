@@ -1,4 +1,6 @@
 import "src/content/www_youtube_com/pages/watch.css";
+import { screenshotOfVideo } from "src/content/video";
+import { clipboardWriteBlob } from "src/content/clipboard";
 import { showSnackbar } from "src/content/snackbar";
 import {
   addOrRemoveBookmark,
@@ -54,7 +56,7 @@ function injectEuisu(): boolean {
     return false;
   }
 
-  const euisu = createEuisu();
+  const euisu = createEuisu(video);
   parent.insertBefore(euisu, nextSibling);
 
   return true;
@@ -102,15 +104,20 @@ function retrieveControlbarSpacer(): HTMLElement | null {
   );
 }
 
-function createEuisu(): HTMLElement {
+function createEuisu(video: HTMLVideoElement): HTMLElement {
   const div = document.createElement("div");
   div.classList.add("euisu");
+
+  const screenshotButton = makeScreenshotButton(video);
+  div.appendChild(screenshotButton);
 
   const hewButton = makeHewButton();
   div.appendChild(hewButton);
 
   // Shortcuts
   const shortcuts: Shortcuts = {
+    Digit4: () => screenshotButton.click(),
+    KeyY: () => screenshotButton.click(),
     Digit0: () => hewButton.click(),
     Backquote: () => {
       const video = retrieveVideo();
@@ -177,6 +184,17 @@ declare global {
 
 interface Shortcuts {
   [code: string]: () => void;
+}
+
+function makeScreenshotButton(video: HTMLVideoElement): HTMLButtonElement {
+  const button = document.createElement("button");
+  button.innerText = "Screenshot";
+  button.addEventListener("click", async () => {
+    const blob = await screenshotOfVideo(video);
+    await clipboardWriteBlob(blob);
+    showSnackbar("Screenshot copied!");
+  });
+  return button;
 }
 
 function makeHewButton(): HTMLButtonElement {
