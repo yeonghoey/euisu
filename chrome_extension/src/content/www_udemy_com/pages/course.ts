@@ -164,6 +164,11 @@ function createEuisu(video: HTMLVideoElement): HTMLElement {
     if (document.activeElement?.nodeName === "INPUT") {
       return;
     }
+    // Skip when it's under <form>
+    if (document.activeElement?.closest("form") !== null) {
+      return;
+    }
+
     if (ev.code in shortcuts) {
       shortcuts[ev.code]();
       console.log(`"${ev.code}" captured`);
