@@ -9,12 +9,12 @@ export function createEuisu(
   div.classList.add("euisu");
   const scrapButoon = makeScrapButton(targetText, audioURL, meaning);
   div.appendChild(scrapButoon);
-  const imageButton = makeImageButton(targetText);
-  div.appendChild(imageButton);
   if (targetText.split(" ").length == 1) {
     const vocaButoon = makeVocaButton(targetText);
     div.appendChild(vocaButoon);
   }
+  const imageButton = makeImageButton(targetText);
+  div.appendChild(imageButton);
   return div;
 }
 
