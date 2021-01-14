@@ -67,7 +67,7 @@ function processMean(
 
   const meanText = extractNormalizedLineText(mean);
   const meaning =
-    meanAdditionText !== "" ? `/${meanAdditionText}/ ${meanText}` : meanText;
+    meanAdditionText !== "" ? `(${meanAdditionText}) ${meanText}` : meanText;
 
   const euisu = createEuisu(targetText, audioURL, meaning);
   mean.parentElement?.appendChild(euisu);
