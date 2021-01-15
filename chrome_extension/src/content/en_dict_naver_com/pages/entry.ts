@@ -58,13 +58,7 @@ function processMean(
   audioURL: string | null,
   mean: HTMLElement
 ): void {
-  // Attach mean_addition if it exists.
-  const meanAddition = mean.parentNode?.querySelector<HTMLElement>(
-    ".mean_addition"
-  );
-  const meanAdditionText =
-    meanAddition != null ? extractNormalizedLineText(meanAddition) : "";
-
+  const meanAdditionText = extractMeanAdditionText(mean);
   const meanText = extractNormalizedLineText(mean);
   const meaning =
     meanAdditionText !== "" ? `(${meanAdditionText}) ${meanText}` : meanText;
@@ -75,6 +69,21 @@ function processMean(
 
 function injectEuisuIntoExampleItems(): void {
   queryExampleItems().forEach(processExamples);
+}
+
+function extractMeanAdditionText(mean: HTMLElement): string {
+  const meanAdditions = mean.parentNode?.querySelectorAll<HTMLElement>(
+    ".mean_addition"
+  );
+
+  if (meanAdditions === undefined) {
+    return "";
+  }
+
+  return [...meanAdditions]
+    .map((el) => extractNormalizedLineText(el))
+    .join(" ")
+    .trim();
 }
 
 function queryExampleItems(): HTMLElement[] {
