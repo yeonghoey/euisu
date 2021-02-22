@@ -58,7 +58,7 @@ function retrieveTitle(): HTMLElement | null {
 }
 
 function retrieveVideo(): HTMLVideoElement | null {
-  return document.querySelector<HTMLVideoElement>("#primary video");
+  return document.querySelector<HTMLVideoElement>("#content video");
 }
 
 function retrieveRightControls(): HTMLElement | null {
