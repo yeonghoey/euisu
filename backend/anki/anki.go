@@ -118,6 +118,8 @@ func listen(filename string) {
 	switch os {
 	case "darwin":
 		cmd = exec.Command("afplay", filename)
+	case "windows":
+		cmd = exec.Command("ffplay", "-autoexit", "-nodisp", "-loglevel", "error", filename)
 	default:
 		log.Fatalf("Unsupported OS: %s", os)
 	}
