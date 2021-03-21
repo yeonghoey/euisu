@@ -17,7 +17,7 @@ func main() {
 	}
 
 	hew, err := hew.NewHew(hewCmdPath)
-	if err != nil {
+	if !noHew && err != nil {
 		log.Fatalf("Failed to locate hew command: %v", err)
 	}
 

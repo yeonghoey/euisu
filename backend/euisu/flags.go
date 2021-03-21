@@ -8,6 +8,7 @@ import (
 var servAddr string
 var ankiMedia string
 var hewCmdPath string
+var noHew bool
 
 func init() {
 	flag.StringVar(
@@ -28,5 +29,11 @@ func init() {
 		"hewcmdpath",
 		os.Getenv("HEW"),
 		`Path to Hew command`,
+	)
+	flag.BoolVar(
+		&noHew,
+		"nohew",
+		false,
+		`Ignore Hew`,
 	)
 }
