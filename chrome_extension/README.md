@@ -1,0 +1,2 @@
+- Node 14 버전을 사용할 것. (nvm 설치)
+- 처음 다운받고 `npm install` -> `npx webpack`
