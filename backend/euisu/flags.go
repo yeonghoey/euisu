@@ -33,7 +33,7 @@ func init() {
 	flag.BoolVar(
 		&noHew,
 		"nohew",
-		false,
+		true,
 		`Ignore Hew`,
 	)
 }
