@@ -1,3 +1,4 @@
 - Node 14 버전을 사용할 것. (nvm 설치)
+  - `brew install node@14`
 - 처음 다운받고 `npm install` -> `npx webpack`
 - 빌드에 성공하면 dist 폴더가 생성되는데, 이 폴더를 `chrome://extensions`에서 압축해제된 확장프로그램으로 로드하면 됨
